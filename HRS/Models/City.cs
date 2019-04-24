@@ -13,5 +13,6 @@ namespace HRS.Models
         [Display(Name = "İl Adı")]
         [Required(ErrorMessage = "Bu alan zorunludur.")]
         public string Name { get; set; }
+        public List<Town> Towns { get; set; }
     }
 }

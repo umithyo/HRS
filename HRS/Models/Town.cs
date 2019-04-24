@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HRS.Models
 {
-    public class County
+    public class Town
     {
         [Key]
         public int Id { get; set; }

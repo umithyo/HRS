@@ -19,8 +19,8 @@ namespace HRS.Models
         public string Password { get; set; }
         public string Role { get; set; } = RoleConfig.User;
         //If doctor;
-        public List<Clinic> Clinics { get; set; }
-        public List<Hospital> Hospitals { get; set; }
+        public Clinic Clinics { get; set; }
+        public Hospital Hospitals { get; set; }
 
         [Column(TypeName ="TIMESTAMP")]
         public DateTime CreatedAt { get; set; }

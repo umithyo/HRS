@@ -16,7 +16,8 @@ namespace HRS.Models
         public string Name { get; set; }
         [Display(Name = "Poliklinik Adresi")]
         [Required(ErrorMessage = "Bu alan zorunludur.")]
-        public string City { get; set; }
+        public virtual City City { get; set; }
+        public virtual Town Town { get; set; }
         public List<Polyclinic> Polyclinics { get; set; }
 
         [Column(TypeName = "TIMESTAMP")]

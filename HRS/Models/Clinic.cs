@@ -20,5 +20,7 @@ namespace HRS.Models
         [Display(Name = "Hastane")]
         [Required(ErrorMessage = "Bu alan zorunludur.")]
         public virtual Hospital Hospital { get; set; }
+        [Column(TypeName = "TIMESTAMP")]
+        public DateTime CreatedAt { get; set; }
     }
 }
