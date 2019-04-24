@@ -21,7 +21,6 @@ namespace HRS
 
         public IActionResult Index()
         {
-            HttpContext.Session.
             return View();
         }
 
