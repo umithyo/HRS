@@ -1,0 +1,65 @@
+﻿<html>
+<head>
+    <title>RANDEVU AL</title>
+    <meta charset="UTF-8">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/aos.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="css/hover.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,400,400i,700,700i" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800" rel="stylesheet">
+    @*<link rel="stylesheet" href="css/owl.carousel.css">*@
+    <link rel="stylesheet" href="css/jquery.mCustomScrollbar.css">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="images-content" data-aos="fade-in">
+        <div class="images-in"></div>
+    </div>
+    <div class="menu nav-bar aos-init aos-animate">
+        <div class="container-fluid">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4" data-aos="fade-zoom-in"
+                         data-aos-easing="ease-in-back"
+                         data-aos-delay="300"
+                         data-aos-offset="0">
+                        <img src="images/logo.png">
+                    </div>
+                    <div class="col-md-8 calender">
+                        <div class="time">
+                            <i class="fa fa-clock-o" aria-hidden="true"></i>
+                            <span>21:00</span>
+                        </div>
+                        <div class="date">
+                            <i class="fa fa-calendar" aria-hidden="true"></i>
+                            <span>17.04.2019 / Pazartesi</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="main_content">
+        @RenderBody()
+    </div>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/additional-methods.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/js/main.js"></script>
+    <script src="~/js/aos.js"></script>
+    <script>
+        AOS.init();
+    </script>
+    <script src="~/js/jquery.mCustomScrollbar.concat.min.js"></script>
+    @*<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>*@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>
