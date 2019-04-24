@@ -70,7 +70,7 @@ namespace HRS
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-            app.UseSession().UseMiddleware<IUserManager>();
+            app.UseSession();
 
             app.UseMvc(routes =>
             {
