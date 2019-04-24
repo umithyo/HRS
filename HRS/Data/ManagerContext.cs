@@ -18,8 +18,8 @@ namespace HRS.Data
 
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<City> Cities { get; set; }
-        public DbSet<Clinic> Clinics { get; set; }
-        public DbSet<County> Counties { get; set; }
+        public DbSet<Town> Towns { get; set; }
+        public DbSet<Clinic> Clinics { get; set; }      
         public DbSet<Hospital> Hospitals { get; set; }
         public DbSet<Polyclinic> Polyclinics { get; set; }
         public DbSet<User> Users { get; set; }
