@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HRS.Data;
+using HRS.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -42,8 +44,13 @@ namespace HRS
             });
             services.AddDistributedMemoryCache();
 
+            services.AddDbContext<ManagerContext>();
             services.AddSingleton(_appSettings);
+            ManagerContext.ConnectionStrings = _appSettings.GetSection("ConnectionStrings").Get<Dictionary<string, string>>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<IUserManager, UserManager>();
+            services.AddScoped<ISessionManager, SessionManager>();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
@@ -63,7 +70,7 @@ namespace HRS
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-            app.UseSession();
+            app.UseSession().UseMiddleware<IUserManager>();
 
             app.UseMvc(routes =>
             {
