@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HRS.Authorization;
 using HRS.Data;
 using HRS.Helpers;
 using Microsoft.AspNetCore.Mvc;
+using static HRS.Helpers.Utils;
 
 namespace HRS
 {
@@ -19,6 +21,7 @@ namespace HRS
             userManager = _userManager;
         }
 
+        [PermissionAuthorize("Admin")]
         public IActionResult Index()
         {
             return View();
