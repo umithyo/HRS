@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using HRS.Authorization;
+using HRS.Filters;
 using HRS.Data;
 using HRS.Helpers;
 using Microsoft.AspNetCore.Mvc;
@@ -14,14 +14,14 @@ namespace HRS
     {
         private readonly ManagerContext context;
         private readonly IUserManager userManager;
-
+       
         public HomeController(ManagerContext _context, IUserManager _userManager)
         {
             context = _context;
             userManager = _userManager;
         }
 
-        [PermissionAuthorize("Admin")]
+        [PermissionAuthorize(Permissions = new string[] { RoleConfig.Admin }, RedirectUri = "/Home/Login")]
         public IActionResult Index()
         {
             return View();
