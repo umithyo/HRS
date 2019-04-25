@@ -11,10 +11,10 @@ namespace HRS.Helpers
     {
         public static class RoleConfig
         {
-            public static readonly string Founder = "Developer";
-            public static readonly string Admin = "Admin";
-            public static readonly string Operator = "Operator";
-            public static readonly string User = "User";
+            public const string Founder = "Developer";
+            public const string Admin = "Admin";
+            public const string Operator = "Operator";
+            public const string User = "User";
         }
 
         public static class HashString
