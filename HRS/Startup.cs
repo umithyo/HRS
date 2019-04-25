@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using HRS.Authorization;
 using HRS.Data;
 using HRS.Helpers;
 using Microsoft.AspNetCore.Authorization;
@@ -14,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace HRS
 {
@@ -50,9 +50,8 @@ namespace HRS
             services.AddSingleton(_appSettings);
             ManagerContext.ConnectionStrings = _appSettings.GetSection("ConnectionStrings").Get<Dictionary<string, string>>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddScoped<IUserManager, UserManager>();
-            services.AddScoped<ISessionManager, SessionManager>();
-            services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
+            services.AddTransient<IUserManager, UserManager>();
+            services.AddTransient<ISessionManager, SessionManager>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
@@ -73,7 +72,6 @@ namespace HRS
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseSession();
-
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
