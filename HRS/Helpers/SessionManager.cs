@@ -15,6 +15,7 @@ namespace HRS.Helpers
         void SetLoggedOut();
         Guid? GetUserId();
         User GetUser();
+        string GetRole();
     }
 
     public class SessionManager : ISessionManager
@@ -70,6 +71,13 @@ namespace HRS.Helpers
             if (u_id == null)
                 return null;
             return context.Users.FirstOrDefault(x => x.Id == u_id);      
+        }
+
+        public string GetRole()
+        {
+            if (!IsLoggedIn())
+                return null;
+            return _getString("Role");
         }
 
         private void _setRange(Dictionary<string, string> info)
