@@ -12,15 +12,19 @@ namespace HRS.Models
     {
         [Key]
         public Guid Id { get; set; }
-        [Range(11, 11, ErrorMessage = "Lütfen geçerli bir TC Kimlik No girin.")]
+        [StringLength(11, MinimumLength = 11, ErrorMessage = "Lütfen geçerli bir TC Kimlik No girin.")]
+        
+        [RegularExpression("([1-9][0-9]*)", ErrorMessage = "Lütfen geçerli bir TC Kimlik No girin.")]
         [Required(ErrorMessage = "Bu alan zorunludur.")]
+        [Display(Name = "TC Kimlik No", Prompt = "TC Kimlik No")]
         public int TCKimlikNo { get; set; }
         [Required(ErrorMessage = "Bu alan zorunludur.")]
+        [Display(Name = "Şifre", Prompt = "Şifre")] 
         public string Password { get; set; }
         public string Role { get; set; } = RoleConfig.User;
         //If doctor;
-        public Clinic Clinics { get; set; }
-        public Hospital Hospitals { get; set; }
+        public Clinic Clinic { get; set; }
+        public Hospital Hospital { get; set; }
 
         [Column(TypeName ="TIMESTAMP")]
         public DateTime CreatedAt { get; set; }
