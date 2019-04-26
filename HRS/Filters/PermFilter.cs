@@ -30,11 +30,29 @@ namespace HRS.Filters
         {
             var sessionManager = context.HttpContext.RequestServices.GetService<ISessionManager>();
             var userRole = sessionManager.GetRole();
-            if (!Permissions.Any(x => x == userRole))
+            if (Permissions != null)
+            {
+                if (!Permissions.Any(x => x == userRole))
+                {
+                    Redirect(context, RedirectUri);
+                }
+            }
+            else
+            {
+                if (!sessionManager.IsLoggedIn())
+                {
+                    Redirect(context, RedirectUri);
+                }
+            }
+        }    
+
+        private void Redirect(ActionExecutingContext context, string RedirectUri)
+        {
+            if (context != null)
             {
                 context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 context.HttpContext.Response.Redirect(!string.IsNullOrEmpty(RedirectUri) ? RedirectUri : "/Home/Login");
             }
-        }    
+        }
     }
 }

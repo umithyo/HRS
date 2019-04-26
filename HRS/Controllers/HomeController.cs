@@ -21,7 +21,7 @@ namespace HRS
             userManager = _userManager;
         }
 
-        [PermissionAuthorize(Permissions = new string[] { RoleConfig.Admin }, RedirectUri = "/Home/Login")]
+        [PermissionAuthorize]
         public IActionResult Index()
         {
             return View();
