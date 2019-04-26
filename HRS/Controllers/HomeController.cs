@@ -7,6 +7,7 @@ using HRS.Data;
 using HRS.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using static HRS.Helpers.Utils;
+using HRS.Models.ViewModels;
 
 namespace HRS
 {
@@ -31,10 +32,23 @@ namespace HRS
         {
             return View();
         }
-
+       
         public IActionResult Register()
         {
             return View();
+        }
+
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public IActionResult Register(LoginVM vm)
+        {
+            var status = userManager.Register(vm.User, vm.UserInfo);
+            if (status != ManagerStatus.OK)
+            {
+                ViewBag.Error = userManager.GetErrorString(status);
+                return View(vm);
+            }
+            return RedirectToAction(nameof(Login), vm.User);
         }
     }
 }

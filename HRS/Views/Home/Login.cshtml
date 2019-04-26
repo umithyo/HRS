@@ -1,10 +1,18 @@
-﻿<div class="container">
+﻿@model User
+
+<div class="container">
     <form>
         <div class="login col-md-12 row">
             <h1 class="col-md-8" data-aos-duration="500" data-aos="fade-down">RANDEVU GİRİŞ EKRANI</h1>
 
-            <input class="col-md-8" data-aos="fade-down" type="text" placeholder="Tc">
-            <input class="col-md-8" data-aos="fade-down" type="password" placeholder="Şifreniz">
+            <div class="form-group col-md-8" data-aos="fade-down">
+                <input class="form-control" type="text" asp-for="TCKimlikNo">
+                <span asp-validation-for="TCKimlikNo" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-8" data-aos="fade-down">
+                <input class="form-control" type="text" asp-for="Password">
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
             <button class="col-md-8 hvr-shutter-out-vertical hvr-round-corners" data-aos="fade-down" type="submit">
                 <i class="fa fa-sign-in" aria-hidden="true"></i>
                 <text href="#" class="link">Giriş Yap</text>
@@ -20,3 +28,7 @@
         </div>
     </form>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

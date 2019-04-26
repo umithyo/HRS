@@ -133,7 +133,7 @@ button:hover{
     margin-top: 10px;
     background: #02bdbd;
 }
-.login span{
+.login span .information{
     margin-top: 12%;
     color: #808080d6;
     letter-spacing: 1px;

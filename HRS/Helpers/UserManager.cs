@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -13,35 +14,83 @@ using static HRS.Helpers.Utils;
 
 namespace HRS.Helpers
 {
+    public enum ManagerStatus
+    {
+        OK,
+        UNKNOWN,
+        USER_NOT_FOUND,
+        USER_TC_EXISTS,
+        USER_EMAIL_EXISTS,
+        USER_PHONE_EXISTS
+    };
+
     public interface IUserManager
     {
-
+        UserInfo GetUserInfo(User user);
+        User GetUser(Guid id);
+        bool UserExists(Guid id);
+        ManagerStatus Register(User user, UserInfo userinfo);
+        ManagerStatus SignIn(User _user);
+        ManagerStatus UpdateUser(User _user, UserInfo _userinfo);
+        string GetErrorString(ManagerStatus status);
     }
+
     public class UserManager : IUserManager
     {
         IHttpContextAccessor accessor;
         private HttpContext HttpContext;
         private readonly ManagerContext context;
+        private readonly ISessionManager sessionManager;
 
-        public UserManager(IHttpContextAccessor _accessor, ManagerContext _context)
+        public UserManager(IHttpContextAccessor _accessor, ManagerContext _context, ISessionManager _sessionManager)
         {
             accessor = _accessor;
             HttpContext = accessor.HttpContext;
             context = _context;
+            sessionManager = _sessionManager;
         }
 
-        public List<UserInfo> GetUserInfo(User user)
+        public string GetErrorString(ManagerStatus status)
         {
-            return context.UserInfos.Include(x => x.User).Where(x => x.User.Id == user.Id).ToList();
+            switch (status)
+            {
+                case ManagerStatus.UNKNOWN:
+                    return "Bilinmeyen bir hata oluştu, kullanıcı kaydı tamamlanamadı.";
+                case ManagerStatus.USER_NOT_FOUND:
+                    return "Giriş bilgileri yanlış, lütfen doğru TC Kimlik NO ve şifre girdiğinizden emin olun.";
+                case ManagerStatus.USER_TC_EXISTS:
+                    return "Bu TC Kimlik No ile başka bir kullanıcı zaten kayıtlı.";
+                case ManagerStatus.USER_EMAIL_EXISTS:
+                    return "Bu email ile başka bir kullanıcı zaten kayıtlı.";
+                case ManagerStatus.USER_PHONE_EXISTS:
+                    return "Bu telefon numarası ile başka bir kullanıcı zaten kayıtlı.";
+                default:
+                    return "";
+            }
         }
 
-        public void Register(User user, UserInfo userInfo)
+        public UserInfo GetUserInfo(User user)
+        {
+            return context.UserInfos.Include(x => x.User).Where(x => x.User.Id == user.Id).FirstOrDefault();
+        }
+
+        public User GetUser(Guid id)
+        {
+            return context.Users.FirstOrDefault(x => x.Id == id);
+        }
+
+        public bool UserExists(Guid id)
+        {
+            return GetUser(id) != null;
+        }
+
+        public ManagerStatus Register(User user, UserInfo userInfo)
         {
             try
             {
-                var exists = UserExists(user, userInfo);
+                var exists = CheckUserInfoValidity(user, userInfo);
                 if (exists.exists)
-                    throw new RegistrationException(exists.message);
+                    return exists.ManagerStatus;
 
                 user.CreatedAt = DateTime.Now;
                 userInfo.CreatedAt = DateTime.Now;
@@ -50,35 +99,66 @@ namespace HRS.Helpers
                 context.Add(user);
                 context.Add(userInfo);
                 context.SaveChanges();
+                return ManagerStatus.OK;
             }
             catch (Exception)
             {
-                throw;
+                return ManagerStatus.UNKNOWN;
             }
         }
 
-        public dynamic UserExists(User user, UserInfo userInfo)
+        public ManagerStatus SignIn(User _user)
         {
-            var expressions = new
+            try
             {
-                tc = _exists<User>(x=>x.TCKimlikNo == user.TCKimlikNo),
-                email = _exists<UserInfo>(x=>x.Email == userInfo.Email),
-                phone = _exists<UserInfo>(x=>x.Phone == userInfo.Phone)
-            };
-
-            if (context.Users.Any(expressions.tc))
-                return new { exists = true, message = "Bu TC kimlik numarası zaten kullanımda." };
-            if (context.UserInfos.Any(expressions.email))
-                return new { exists = true, message = "Bu email adresi zaten kullanımda." };
-            if (context.UserInfos.Any(expressions.phone))
-                return new { exists = true, message = "Bu telefon numarası zaten kullanımda." };
-
-            return new { exists = false };
+                var user = GetUser(_user.Id);
+                if (user == null)
+                    return ManagerStatus.USER_NOT_FOUND;
+                sessionManager.SetLoggedIn(user);
+                return ManagerStatus.OK;
+            }
+            catch (Exception)
+            {
+                return ManagerStatus.UNKNOWN;
+            }
         }
 
-        private Expression<Func<T, bool>> _exists<T>(Expression<Func<T, bool>> expression)
+        public ManagerStatus UpdateUser(User _user, UserInfo _userinfo)
         {
-            return expression;
+            try
+            {
+                if (!UserExists(_user.Id))
+                    return ManagerStatus.USER_NOT_FOUND;
+
+                context.Update(_user);
+                if (_userinfo != null && _user.Id == _userinfo.User.Id)
+                    context.Update(_userinfo);
+
+                context.SaveChanges();
+                return ManagerStatus.OK;
+            }
+            catch (Exception)
+            {
+                return ManagerStatus.UNKNOWN;
+            }
+        }
+
+        private dynamic CheckUserInfoValidity(User user, UserInfo userInfo)
+        {
+            var e = new Dictionary<ManagerStatus, bool>() 
+            {
+                {ManagerStatus.USER_TC_EXISTS, context.Users.Any(x=>x.TCKimlikNo == user.TCKimlikNo) },
+                {ManagerStatus.USER_EMAIL_EXISTS, context.UserInfos.Any(x=>x.Email == userInfo.Email) },
+                {ManagerStatus.USER_PHONE_EXISTS, context.UserInfos.Any(x=>x.Phone == userInfo.Phone) }
+            };
+
+            foreach (var item in e)
+            {
+                if (item.Value)
+                    return new { exists = true, ManagerStatus = item.Key };
+            }
+
+            return new { exists = false, ManagerStatus = ManagerStatus.OK };
         }
     }
 }

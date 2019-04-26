@@ -1,6 +1,7 @@
 ﻿using HRS.Data;
 using HRS.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace HRS.Helpers
 {
     public interface ISessionManager
     {
+        User CurrentUser { get; }
         bool IsLoggedIn();
         void SetLoggedIn(User user);
         void SetLoggedOut();
@@ -20,6 +22,12 @@ namespace HRS.Helpers
 
     public class SessionManager : ISessionManager
     {
+        public User CurrentUser {
+            get {
+                return GetUser();
+            }
+        }
+
         IHttpContextAccessor accessor;
         private HttpContext HttpContext;
         private readonly ManagerContext context;
