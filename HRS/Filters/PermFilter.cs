@@ -21,9 +21,9 @@ namespace HRS.Filters
         public string[] Permissions { get; set; }
         public string RedirectUri { get; set; }
 
-        public PermissionAuthorize():base()
-        {   
-            
+        public PermissionAuthorize() : base()
+        {
+
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -33,18 +33,14 @@ namespace HRS.Filters
             if (Permissions != null)
             {
                 if (!Permissions.Any(x => x == userRole))
-                {
                     Redirect(context, RedirectUri);
-                }
             }
             else
             {
                 if (!sessionManager.IsLoggedIn())
-                {
                     Redirect(context, RedirectUri);
-                }
             }
-        }    
+        }
 
         private void Redirect(ActionExecutingContext context, string RedirectUri)
         {
