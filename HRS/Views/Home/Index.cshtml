@@ -1,12 +1,25 @@
-﻿<div class="user-filtre">
+﻿@{
+    if (!sessionManager.IsLoggedIn())
+    {
+        return;
+    }
+    var role = sessionManager.GetRole();
+    var user = sessionManager.GetUser();
+    var userinfo = userManager.GetUserInfo(user);
+    var cities = ViewBag.Cities as IEnumerable<City>;
+    var polyclinics = ViewBag.Polyclinics as IEnumerable<Polyclinic>;
+    var hospitals = ViewBag.Hospitals as IEnumerable<Hospital>;
+}
+
+<div class="user-filtre">
     <div class="container" data-aos="fade-left"
          data-aos-anchor="#example-anchor"
          data-aos-offset="500"
          data-aos-duration="500">
-        <a href="#" class="sign-out hvr-box-shadow-inset"><i class="fa fa-sign-out" aria-hidden="true"></i> ÇIKIŞ</a>
+        <a asp-action="SignOut" class="sign-out hvr-box-shadow-inset"><i class="fa fa-sign-out" aria-hidden="true"></i> ÇIKIŞ</a>
         <a href="#" class="profil hvr-box-shadow-inset">
             <i class="fa fa-user-circle-o" aria-hidden="true"></i>
-            Sn. Dilan Ece Çelik
+            Sn. @userinfo.Name @userinfo.Surname
         </a>
 
     </div>
@@ -18,35 +31,35 @@
         <h5>HASTANE RANDEVU ARAMA</h5>
         <form>
             <div class="input-group mb-3 il">
-                <select class="custom-select" id="inputGroupSelect01">
+                <select class="custom-select" id="citySelect">
                     <option selected>İl</option>
-                    <option value="1">Ankara</option>
-                    <option value="2">İzmir</option>
-                    <option value="3">Adana</option>
+                    @foreach (var item in cities)
+                    {
+                        <option value="@item.Id">@item.Name</option>
+                    }
                 </select>
             </div>
             <div class="input-group mb-3 il">
-                <select class="custom-select" id="inputGroupSelect01">
+                <select class="custom-select" id="townSelect">
                     <option selected>İlçe</option>
-                    <option value="1">Keçiören</option>
-                    <option value="2">Çubuk</option>
-                    <option value="3">Elmadağ</option>
                 </select>
             </div>
             <div class="input-group mb-3 il">
-                <select class="custom-select" id="inputGroupSelect01">
+                <select class="custom-select" id="polyclinicSelect">
                     <option selected>Klinik</option>
-                    <option value="1">Kulak Burun Boğaz(KBB)</option>
-                    <option value="2">Dahiliye</option>
-                    <option value="3">Onkoloji</option>
+                    @foreach (var item in polyclinics)
+                    {
+                        <option value="@item.Id">@item.Name</option>
+                    }
                 </select>
             </div>
             <div class="input-group mb-3 il">
-                <select class="custom-select" id="inputGroupSelect01">
+                <select class="custom-select" id="hospitalSelect">
                     <option selected>Hastane</option>
-                    <option value="1">Gülhane Araştırma Hastanesi</option>
-                    <option value="2">Atatürk Araştırma Hastanesi</option>
-                    <option value="3">Sanatoryum Göğüs Cerrahisi Hastanesi</option>
+                    @foreach (var item in hospitals)
+                    {
+                        <option value="@item.Id">@item.Name</option>
+                    }
                 </select>
             </div>
             <div class="buttons">
@@ -139,3 +152,37 @@
 
     </div>
 </div>
+
+@section Scripts{ 
+    <script>
+        $(document).ready(function () {
+            function regDependentSelect(dependeeDOMId, dependantDOMId, url, dependeeFirstOption, dependantFirstOption) {
+                $(dependeeDOMId).on('change', function () {  
+                    $(dependantDOMId).html("<option>"+dependantFirstOption+"</option>");
+                    if (this.value != dependeeFirstOption) {
+                        $(dependantDOMId).html("<option>Yükleniyor...</option>");
+                        $.ajax({
+                            url: url + "/" + this.value,
+                            success: function (data) {
+                                $(dependantDOMId).html("<option>" + dependantFirstOption + "</option>");
+                                $.each(data, function () {
+                                    $(dependantDOMId).append($("<option />").val(this.id).text(this.name));
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+
+            let dep = [
+                { dependee: '#citySelect', dependant: '#townSelect', url: "/api/GetTowns", firstdependee: "İl", firstdependant:"İlçe"},
+                { dependee: '#hospitalSelect', dependant: '#polyclinicSelect', url: "/api/GetPolyclinics", first: "Klinik" },
+                { dependee: '#polyclinicSelect', dependant: '#hospitalSelect', url: "/api/GetHospitals", first: "Hastane" },
+            ];
+
+            $.each(dep, function () {
+                regDependentSelect(this.dependee, this.dependant, this.url, this.firstdependee, this.firstdependant);
+            });
+        });
+    </script>
+}
