@@ -2,5 +2,8 @@
 @addTagHelper *, ViewComponent
 @using Microsoft.AspNetCore.Http
 @using HRS
+@using HRS.Helpers
 @using HRS.Models
 @using HRS.Models.ViewModels
+@inject ISessionManager sessionManager
+@inject IUserManager userManager
