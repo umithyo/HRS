@@ -8,6 +8,8 @@ using HRS.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using static HRS.Helpers.Utils;
 using HRS.Models.ViewModels;
+using HRS.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace HRS
 {
@@ -15,16 +17,21 @@ namespace HRS
     {
         private readonly ManagerContext context;
         private readonly IUserManager userManager;
+        private readonly ISessionManager sessionManager;
        
-        public HomeController(ManagerContext _context, IUserManager _userManager)
+        public HomeController(ManagerContext _context, IUserManager _userManager, ISessionManager _sessionManager)
         {
             context = _context;
             userManager = _userManager;
+            sessionManager = _sessionManager;
         }
 
         [PermissionAuthorize]
         public IActionResult Index()
         {
+            ViewBag.Cities = context.Cities.ToList();
+            ViewBag.Polyclinics = context.Polyclinics.ToList();
+            ViewBag.Hospitals = context.Hospitals.ToList();
             return View();
         }
 
@@ -38,6 +45,25 @@ namespace HRS
             return View();
         }
 
+        public IActionResult SignOut()
+        {
+            sessionManager.SetLoggedOut();
+            return RedirectToAction(nameof(Login));
+        }
+
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public IActionResult Login(User user)
+        {
+            var status = userManager.SignIn(user);
+            if (status != ManagerStatus.OK)
+            {
+                ViewBag.Error = userManager.GetErrorString(status);
+                return View(user);
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
         [ValidateAntiForgeryToken]
         [HttpPost]
         public IActionResult Register(LoginVM vm)
@@ -48,7 +74,7 @@ namespace HRS
                 ViewBag.Error = userManager.GetErrorString(status);
                 return View(vm);
             }
-            return RedirectToAction(nameof(Login), vm.User);
+            return RedirectToAction(nameof(Login));
         }
     }
 }

@@ -21,7 +21,8 @@ namespace HRS.Helpers
         USER_NOT_FOUND,
         USER_TC_EXISTS,
         USER_EMAIL_EXISTS,
-        USER_PHONE_EXISTS
+        USER_PHONE_EXISTS,
+        USER_WRONG_CREDENTIALS
     };
 
     public interface IUserManager
@@ -57,13 +58,15 @@ namespace HRS.Helpers
                 case ManagerStatus.UNKNOWN:
                     return "Bilinmeyen bir hata oluştu, kullanıcı kaydı tamamlanamadı.";
                 case ManagerStatus.USER_NOT_FOUND:
-                    return "Giriş bilgileri yanlış, lütfen doğru TC Kimlik NO ve şifre girdiğinizden emin olun.";
+                    return "Böyle bir kullanıcı bulunamadı";
                 case ManagerStatus.USER_TC_EXISTS:
                     return "Bu TC Kimlik No ile başka bir kullanıcı zaten kayıtlı.";
                 case ManagerStatus.USER_EMAIL_EXISTS:
                     return "Bu email ile başka bir kullanıcı zaten kayıtlı.";
                 case ManagerStatus.USER_PHONE_EXISTS:
                     return "Bu telefon numarası ile başka bir kullanıcı zaten kayıtlı.";
+                case ManagerStatus.USER_WRONG_CREDENTIALS:
+                    return "Giriş bilgileri yanlış, lütfen doğru TC Kimlik NO ve şifre girdiğinizden emin olun.";
                 default:
                     return "";
             }
@@ -77,6 +80,11 @@ namespace HRS.Helpers
         public User GetUser(Guid id)
         {
             return context.Users.FirstOrDefault(x => x.Id == id);
+        }
+
+        public User GetUserFromTC(string tc)
+        {
+            return context.Users.FirstOrDefault(x => x.TCKimlikNo == tc);
         }
 
         public bool UserExists(Guid id)
@@ -96,6 +104,9 @@ namespace HRS.Helpers
                 userInfo.CreatedAt = DateTime.Now;
                 user.Role = RoleConfig.User;
 
+                user.Password = HashString.GetMD5(user.Password);
+                userInfo.User = user;
+
                 context.Add(user);
                 context.Add(userInfo);
                 context.SaveChanges();
@@ -111,9 +122,11 @@ namespace HRS.Helpers
         {
             try
             {
-                var user = GetUser(_user.Id);
+                var user = GetUserFromTC(_user.TCKimlikNo);
                 if (user == null)
                     return ManagerStatus.USER_NOT_FOUND;
+                if (user.Password != HashString.GetMD5(_user.Password))
+                    return ManagerStatus.USER_WRONG_CREDENTIALS;
                 sessionManager.SetLoggedIn(user);
                 return ManagerStatus.OK;
             }
