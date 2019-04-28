@@ -332,3 +332,5 @@ ASALocalRun/
 /docker-compose.override.yml
 /docker-compose.dcproj
 /.dockerignore
+/HRS/Migrations/20190428040206_m1.Designer.cs
+/HRS/Migrations/20190428040206_m1.cs
