@@ -17,9 +17,10 @@ namespace HRS.Models
         [RegularExpression("([1-9][0-9]*)", ErrorMessage = "Lütfen geçerli bir TC Kimlik No girin.")]
         [Required(ErrorMessage = "Bu alan zorunludur.")]
         [Display(Name = "TC Kimlik No", Prompt = "TC Kimlik No")]
-        public int TCKimlikNo { get; set; }
+        public string TCKimlikNo { get; set; }
         [Required(ErrorMessage = "Bu alan zorunludur.")]
         [Display(Name = "Şifre", Prompt = "Şifre")] 
+        [DataType(DataType.Password)]
         public string Password { get; set; }
         public string Role { get; set; } = RoleConfig.User;
         //If doctor;

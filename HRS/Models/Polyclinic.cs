@@ -14,7 +14,7 @@ namespace HRS.Models
         [Display(Name ="Poliklinik Adı")]
         [Required(ErrorMessage = "Bu alan zorunludur.")]
         public string Name { get; set; }
-        public virtual Hospital Hospital { get; set; }
+        public List<HospitalPolyclinic> HospitalPolyclinics { get; set; }
 
         [Column(TypeName = "TIMESTAMP")]
         public DateTime CreatedAt { get; set; }
