@@ -102,6 +102,19 @@ namespace HRS.Migrations
                     b.ToTable("Hospitals");
                 });
 
+            modelBuilder.Entity("HRS.Models.HospitalPolyclinic", b =>
+                {
+                    b.Property<int>("HospitalId");
+
+                    b.Property<int>("PolyclinicId");
+
+                    b.HasKey("HospitalId", "PolyclinicId");
+
+                    b.HasIndex("PolyclinicId");
+
+                    b.ToTable("HospitalPolyclinic");
+                });
+
             modelBuilder.Entity("HRS.Models.Polyclinic", b =>
                 {
                     b.Property<int>("Id")
@@ -110,14 +123,10 @@ namespace HRS.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TIMESTAMP");
 
-                    b.Property<int?>("HospitalId");
-
                     b.Property<string>("Name")
                         .IsRequired();
 
                     b.HasKey("Id");
-
-                    b.HasIndex("HospitalId");
 
                     b.ToTable("Polyclinics");
                 });
@@ -144,25 +153,27 @@ namespace HRS.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("ClinicsId");
+                    b.Property<int?>("ClinicId");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TIMESTAMP");
 
-                    b.Property<int?>("HospitalsId");
+                    b.Property<int?>("HospitalId");
 
                     b.Property<string>("Password")
                         .IsRequired();
 
                     b.Property<string>("Role");
 
-                    b.Property<int>("TCKimlikNo");
+                    b.Property<string>("TCKimlikNo")
+                        .IsRequired()
+                        .HasMaxLength(11);
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClinicsId");
+                    b.HasIndex("ClinicId");
 
-                    b.HasIndex("HospitalsId");
+                    b.HasIndex("HospitalId");
 
                     b.ToTable("Users");
                 });
@@ -233,11 +244,17 @@ namespace HRS.Migrations
                         .HasForeignKey("TownId");
                 });
 
-            modelBuilder.Entity("HRS.Models.Polyclinic", b =>
+            modelBuilder.Entity("HRS.Models.HospitalPolyclinic", b =>
                 {
                     b.HasOne("HRS.Models.Hospital", "Hospital")
-                        .WithMany("Polyclinics")
-                        .HasForeignKey("HospitalId");
+                        .WithMany("HospitalPolyclinics")
+                        .HasForeignKey("HospitalId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("HRS.Models.Polyclinic", "Polyclinic")
+                        .WithMany("HospitalPolyclinics")
+                        .HasForeignKey("PolyclinicId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("HRS.Models.Town", b =>
@@ -250,13 +267,13 @@ namespace HRS.Migrations
 
             modelBuilder.Entity("HRS.Models.User", b =>
                 {
-                    b.HasOne("HRS.Models.Clinic", "Clinics")
+                    b.HasOne("HRS.Models.Clinic", "Clinic")
                         .WithMany()
-                        .HasForeignKey("ClinicsId");
+                        .HasForeignKey("ClinicId");
 
-                    b.HasOne("HRS.Models.Hospital", "Hospitals")
+                    b.HasOne("HRS.Models.Hospital", "Hospital")
                         .WithMany()
-                        .HasForeignKey("HospitalsId");
+                        .HasForeignKey("HospitalId");
                 });
 
             modelBuilder.Entity("HRS.Models.UserInfo", b =>
