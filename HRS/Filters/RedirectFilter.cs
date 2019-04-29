@@ -15,24 +15,15 @@ namespace HRS.Filters
 {
 
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
-    public class PermissionAuthorize : ActionFilterAttribute, IActionFilter
+    public class RedirectFilter : ActionFilterAttribute, IActionFilter
     {
         public string Permissions { get; set; }
-        public bool IsApi { get; set; }
-        private string _unauthorizedRedirectUri;
-        public string UnauthorizedRedirectUri {
-            get {
-                return string.IsNullOrEmpty(_unauthorizedRedirectUri) ? "/Home/Login" : _unauthorizedRedirectUri;
-            }
-            set {
-                _unauthorizedRedirectUri = value;
-            }
-        }
+        public string AuthorizedRedirectUri { get; set; }
 
         private ActionExecutingContext context;
         private string[] _Permissions { get; set; }
 
-        public PermissionAuthorize() : base()
+        public RedirectFilter() : base()
         {
 
         }
@@ -42,30 +33,15 @@ namespace HRS.Filters
             context = _context;
             var sessionManager = context.HttpContext.RequestServices.GetService<ISessionManager>();
             var userRole = sessionManager.GetRole();
-            if (Permissions != null)
+            if (Permissions != null && sessionManager.IsLoggedIn())
             {
                 _Permissions = Permissions.Replace(" ", "").Split(",", StringSplitOptions.RemoveEmptyEntries);
-                if (!_Permissions.Any(x => x == userRole))
-                {
-                    if (IsApi == true)
-                        context.Result = new UnauthorizedResult();
-                    else
-                        Redirect(HttpStatusCode.Unauthorized, UnauthorizedRedirectUri);
-                }
-            }
-            else
-            {
-                if (!sessionManager.IsLoggedIn())
-                {
-                    if (IsApi == true)
-                        context.Result = new UnauthorizedResult();
-                    else
-                        Redirect(HttpStatusCode.Unauthorized, UnauthorizedRedirectUri);
-                }
-            }
+                if (_Permissions.Any(x => x == userRole))
+                    Redirect(HttpStatusCode.Redirect, AuthorizedRedirectUri);
+            }          
         }
 
-        private void Redirect(HttpStatusCode code, string RedirectTo)
+        private void Redirect(HttpStatusCode code, string RedirectTo = "/Home/Login")
         {
             if (context != null)
             {
