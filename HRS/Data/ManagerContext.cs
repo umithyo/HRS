@@ -27,7 +27,7 @@ namespace HRS.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<HospitalPolyclinic>()
+            modelBuilder.Entity<HospitalPolyclinic>() //HospitalPolyclinic modeli, Hospital ve Polyclinic varlıkları arasında ilişki tablosu.
                 .HasKey(t => new { t.HospitalId, t.PolyclinicId });
 
             modelBuilder.Entity<HospitalPolyclinic>()
