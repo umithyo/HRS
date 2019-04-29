@@ -1,0 +1,29 @@
+﻿
+@{
+    ViewData["Title"] = "Anasayfa";
+    ViewData["Description"] = "Kontrol paneli";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var pages = Constants.ManagementPages;
+}
+
+<!-- Small boxes (Stat box) -->
+<div class="row">
+    @foreach (var item in pages)
+    {
+        <div class="col-lg-3 col-xs-6">
+            <!-- small box -->
+            <div class="small-box @item.BackgroundClass">
+                <div class="inner">
+                    <h3>@item.Header</h3>
+
+                    <p>@item.Description</p>
+                </div>
+                <div class="icon">
+                    <i class="@item.Icon"></i>
+                </div>
+                <a asp-action="@item.Action" class="small-box-footer">Sayfaya Git<i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+    }       
+</div>

@@ -1,0 +1,209 @@
+﻿@model Hospital
+
+@{
+    ViewData["Title"] = "Hastaneler";
+    ViewData["Description"] = "Hastaneleri Düzenle";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var cities = ViewBag.Cities as IEnumerable<City>;
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box">
+            <div class="box-header">
+                <h3>
+                    <button class="btn btn-app btn-success" data-toggle="modal" data-target="#modal-create">
+                        <span class="badge bg-green">Yeni ekle</span>
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <table class="table" id="table" style="overflow-y:auto; max-height:100vh;">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th>Hastane Adı</th>
+                            <th>Bulunduğu Şehir</th>
+                            <th>Bulunduğu İlçe</th>
+                            <th></th>
+                        </tr>
+                    </thead>                    
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-create">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Hastane Ekle</h4>
+                </div>
+                <div class="modal-body">
+                    <form onsubmit="return false;" id="createForm">
+                        <div class="form-group">
+                            <input class="form-control" asp-for="Name" />
+                            <span asp-validation-for="Name" class="text-red"></span>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" id="citySelect" asp-for="City.Id">
+                                <option selected>İl</option>
+                                @foreach (var item in cities)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                            <span asp-validation-for="City.Id" class="text-red"></span>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" id="townSelect" asp-for="Town.Id">
+                                <option selected>İlçe</option>
+                            </select>
+                            <span asp-validation-for="Town.Id" class="text-red"></span>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="createHospital()">Oluştur</button>
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">İptal</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+</div>
+
+@section Scripts{
+    <script>
+        var dt = $('#table').DataTable({
+            "language": {
+                "url": "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Turkish.json"
+            },
+            serverSide: false,
+            orderMulti: false,
+            "lengthMenu": [[30, 100, 250, -1], [30, 100, 250, "All"]],
+
+            ajax: {
+                type: "get",
+                url: "/api/GetHospitals",
+                dataSrc: "",
+                datatype: "json",
+                // success: function(result) {
+                //     console.log(JSON.stringify(result));
+                // }
+            },
+            "order": [2, "asc"],
+           
+            "columnDefs":
+                [{
+                    "orderable": false,
+                    "checkboxes": true,
+                    "targets": 0
+                },
+                {
+                    "targets": [6],
+                    "visible": true,
+                    "searchable": false,
+                    "orderable": false
+                },
+                {
+                    "targets": [1, 2],
+                    "visible": false,
+                    "searchable": false,
+                    "orderable": false
+                },
+                {
+                    targets: -1,
+                    className: 'text-center'
+                }],     
+            "columns": [
+                { "data": null },
+                { "data": "id" },
+                { "data": "createdAt" },
+                { "data": "name" },
+                { "data": "cityName" },
+                { "data": "townName" },
+                {
+                    "data": null, "render": function (data, type, row) {
+                        return '<div class = "btn-group"><button class = "btn btn-warning" onclick = "loadFromId(\'' + row.id + '\')"><i class="fa fa-edit"></i></button> <button class = "btn btn-danger" onclick = "remove(\'' + row.id + '\')"><i class="fa fa-trash"></i></button></div>';
+                    }
+                },              
+            ],
+        });      
+
+        
+        function loadFromId(id) {
+            $.ajax({
+                url: "/api/GetHospital/" + id,
+                type: "get",
+                success: function (data) {
+                    //modal
+                }
+            })
+
+        }
+
+        $(document).ready(function () {
+            function regDependentSelect(dependeeDOMId, dependantDOMId, url, dependeeFirstOption, dependantFirstOption, twoWay) {
+                $(dependeeDOMId).on('change', function () {
+                    $(dependantDOMId).html("<option>" + dependantFirstOption + "</option>");
+                    if (this.value != dependeeFirstOption) {
+                        if (twoWay == null) {
+                            $(dependantDOMId).html("<option>Yükleniyor...</option>");
+                        }
+                        $.ajax({
+                            url: url + "/" + this.value,
+                            success: function (data) {
+                                if (twoWay == null) {
+                                    $(dependantDOMId).html("<option>" + dependantFirstOption + "</option>");
+                                } else {
+                                    let current = $(dependantDOMId).find("option").children();
+                                    console.log(current);
+                                }
+
+                                $.each(data, function () {
+                                    $(dependantDOMId).append($("<option />").val(this.id).text(this.name));
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+
+            let dep = [
+                { dependee: '#citySelect', dependant: '#townSelect', url: "/api/GetTowns", firstdependee: "İl", firstdependant: "İlçe" },
+            ];
+
+            $.each(dep, function () {
+                regDependentSelect(this.dependee, this.dependant, this.url, this.firstdependee, this.firstdependant);
+            });
+        });
+
+        function createHospital() {
+            var formData = $("#createForm").serialize();
+            console.log(formData);
+            $.ajax({
+                url: "/api/CreateHospital",
+                type: "post",
+                data: formData,
+                success: function () {toastr.success("Hastane kaydı başarıyla oluşturuldu.")},
+                complete: function () {
+                    $("#modal-create").modal("hide");
+                    dt.ajax.reload();
+                }
+            });
+                     
+        }
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
