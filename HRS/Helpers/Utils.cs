@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HRS.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -7,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace HRS.Helpers
 {
-    public class Utils
+    public static class Utils
     {
         public static class RoleConfig
         {
             public const string Founder = "Developer";
-            public const string Admin = "Admin";
-            public const string Operator = "Operator";
-            public const string User = "User";
+            public const string Admin = "Yönetici";
+            public const string Operator = "Operatör";
+            public const string User = "Kullanıcı";
         }
 
         public static class HashString
@@ -35,6 +36,27 @@ namespace HRS.Helpers
                 hash.Clear();
 
                 return builder.ToString();
+            }
+        }
+
+        public static string GetErrorString(ManagerStatus status)
+        {
+            switch (status)
+            {
+                case ManagerStatus.UNKNOWN:
+                    return "Bilinmeyen bir hata oluştu, kullanıcı kaydı tamamlanamadı.";
+                case ManagerStatus.USER_NOT_FOUND:
+                    return "Böyle bir kullanıcı bulunamadı";
+                case ManagerStatus.USER_TC_EXISTS:
+                    return "Bu TC Kimlik No ile başka bir kullanıcı zaten kayıtlı.";
+                case ManagerStatus.USER_EMAIL_EXISTS:
+                    return "Bu email ile başka bir kullanıcı zaten kayıtlı.";
+                case ManagerStatus.USER_PHONE_EXISTS:
+                    return "Bu telefon numarası ile başka bir kullanıcı zaten kayıtlı.";
+                case ManagerStatus.USER_WRONG_CREDENTIALS:
+                    return "Giriş bilgileri yanlış, lütfen doğru TC Kimlik NO ve şifre girdiğinizden emin olun.";
+                default:
+                    return "";
             }
         }
     }
