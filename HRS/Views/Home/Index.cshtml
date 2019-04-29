@@ -156,15 +156,23 @@
 @section Scripts{ 
     <script>
         $(document).ready(function () {
-            function regDependentSelect(dependeeDOMId, dependantDOMId, url, dependeeFirstOption, dependantFirstOption) {
+            function regDependentSelect(dependeeDOMId, dependantDOMId, url, dependeeFirstOption, dependantFirstOption, twoWay) {
                 $(dependeeDOMId).on('change', function () {  
                     $(dependantDOMId).html("<option>"+dependantFirstOption+"</option>");
                     if (this.value != dependeeFirstOption) {
-                        $(dependantDOMId).html("<option>Yükleniyor...</option>");
+                        if (twoWay == null) {
+                            $(dependantDOMId).html("<option>Yükleniyor...</option>");
+                        }
                         $.ajax({
                             url: url + "/" + this.value,
                             success: function (data) {
-                                $(dependantDOMId).html("<option>" + dependantFirstOption + "</option>");
+                                if (twoWay == null) {
+                                    $(dependantDOMId).html("<option>" + dependantFirstOption + "</option>");
+                                } else {
+                                    let current = $(dependantDOMId).find("option").children();
+                                    console.log(current);
+                                }
+                                
                                 $.each(data, function () {
                                     $(dependantDOMId).append($("<option />").val(this.id).text(this.name));
                                 });
@@ -176,8 +184,8 @@
 
             let dep = [
                 { dependee: '#citySelect', dependant: '#townSelect', url: "/api/GetTowns", firstdependee: "İl", firstdependant:"İlçe"},
-                { dependee: '#hospitalSelect', dependant: '#polyclinicSelect', url: "/api/GetPolyclinics", first: "Klinik" },
-                { dependee: '#polyclinicSelect', dependant: '#hospitalSelect', url: "/api/GetHospitals", first: "Hastane" },
+                { dependee: '#hospitalSelect', dependant: '#polyclinicSelect', url: "/api/GetPolyclinics", firstdependee: "Klinik", firstdependant: "Hastane" },
+                { dependee: '#polyclinicSelect', dependant: '#hospitalSelect', url: "/api/GetHospitals", firstdependee: "Hastane", firstdependant: "Klinik"},
             ];
 
             $.each(dep, function () {
