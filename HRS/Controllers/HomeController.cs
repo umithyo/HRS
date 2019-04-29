@@ -27,6 +27,7 @@ namespace HRS
         }
 
         [PermissionAuthorize]
+        [RedirectFilter(Permissions = RoleConfig.Admin, AuthorizedRedirectUri = "/Management/Index")]
         public IActionResult Index()
         {
             ViewBag.Cities = context.Cities.ToList();
@@ -58,7 +59,7 @@ namespace HRS
             var status = userManager.SignIn(user);
             if (status != ManagerStatus.OK)
             {
-                ViewBag.Error = userManager.GetErrorString(status);
+                ViewBag.Error = GetErrorString(status);
                 return View(user);
             }
             return RedirectToAction(nameof(Index));
@@ -71,7 +72,7 @@ namespace HRS
             var status = userManager.Register(vm.User, vm.UserInfo);
             if (status != ManagerStatus.OK)
             {
-                ViewBag.Error = userManager.GetErrorString(status);
+                ViewBag.Error = GetErrorString(status);
                 return View(vm);
             }
             return RedirectToAction(nameof(Login));
