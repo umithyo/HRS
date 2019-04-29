@@ -14,9 +14,9 @@ namespace HRS.Models
         [Display(Name = "Hastane Adı")]
         [Required(ErrorMessage = "Bu alan zorunludur.")]
         public string Name { get; set; }
-        [Display(Name = "Poliklinik Adresi")]
         [Required(ErrorMessage = "Bu alan zorunludur.")]
         public virtual City City { get; set; }
+        [Required(ErrorMessage = "Bu alan zorunludur.")]
         public virtual Town Town { get; set; }
         public List<HospitalPolyclinic> HospitalPolyclinics { get; set; }
 
