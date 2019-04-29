@@ -14,17 +14,6 @@ using static HRS.Helpers.Utils;
 
 namespace HRS.Helpers
 {
-    public enum ManagerStatus
-    {
-        OK,
-        UNKNOWN,
-        USER_NOT_FOUND,
-        USER_TC_EXISTS,
-        USER_EMAIL_EXISTS,
-        USER_PHONE_EXISTS,
-        USER_WRONG_CREDENTIALS
-    };
-
     public interface IUserManager
     {
         UserInfo GetUserInfo(User user);
@@ -33,7 +22,6 @@ namespace HRS.Helpers
         ManagerStatus Register(User user, UserInfo userinfo);
         ManagerStatus SignIn(User _user);
         ManagerStatus UpdateUser(User _user, UserInfo _userinfo);
-        string GetErrorString(ManagerStatus status);
     }
 
     public class UserManager : IUserManager
@@ -49,27 +37,6 @@ namespace HRS.Helpers
             HttpContext = accessor.HttpContext;
             context = _context;
             sessionManager = _sessionManager;
-        }
-
-        public string GetErrorString(ManagerStatus status)
-        {
-            switch (status)
-            {
-                case ManagerStatus.UNKNOWN:
-                    return "Bilinmeyen bir hata oluştu, kullanıcı kaydı tamamlanamadı.";
-                case ManagerStatus.USER_NOT_FOUND:
-                    return "Böyle bir kullanıcı bulunamadı";
-                case ManagerStatus.USER_TC_EXISTS:
-                    return "Bu TC Kimlik No ile başka bir kullanıcı zaten kayıtlı.";
-                case ManagerStatus.USER_EMAIL_EXISTS:
-                    return "Bu email ile başka bir kullanıcı zaten kayıtlı.";
-                case ManagerStatus.USER_PHONE_EXISTS:
-                    return "Bu telefon numarası ile başka bir kullanıcı zaten kayıtlı.";
-                case ManagerStatus.USER_WRONG_CREDENTIALS:
-                    return "Giriş bilgileri yanlış, lütfen doğru TC Kimlik NO ve şifre girdiğinizden emin olun.";
-                default:
-                    return "";
-            }
         }
 
         public UserInfo GetUserInfo(User user)
