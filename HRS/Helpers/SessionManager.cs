@@ -18,6 +18,8 @@ namespace HRS.Helpers
         Guid? GetUserId();
         User GetUser();
         string GetRole();
+        string _getString(string key);
+        void _setString(string key, string value);
     }
 
     public class SessionManager : ISessionManager
@@ -88,7 +90,7 @@ namespace HRS.Helpers
             return _getString("Role");
         }
 
-        private void _setRange(Dictionary<string, string> info)
+        public void _setRange(Dictionary<string, string> info)
         {
             foreach (var item in info)
             {
@@ -96,12 +98,12 @@ namespace HRS.Helpers
             }
         }
 
-        private void _setString(string key, string value)
+        public void _setString(string key, string value)
         {
             HttpContext.Session.SetString(key, value);
         }
 
-        private string _getString(string key)
+        public string _getString(string key)
         {
             return HttpContext.Session.GetString(key);
         }
