@@ -68,14 +68,14 @@ namespace HRS.Filters
                         Redirect(HttpStatusCode.Unauthorized, UnauthorizedRedirectUri);
                 }
             }
+            base.OnActionExecuting(context);
         }
 
         private void Redirect(HttpStatusCode code, string RedirectTo)
         {
             if (context != null)
             {
-                context.HttpContext.Response.StatusCode = (int)code;
-                context.HttpContext.Response.Redirect(RedirectTo);
+                context.Result = new RedirectResult(RedirectTo);
             }
         }
     }

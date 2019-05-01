@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace HRS.Filters
 {
@@ -19,6 +20,7 @@ namespace HRS.Filters
     {
         public string Permissions { get; set; }
         public string AuthorizedRedirectUri { get; set; }
+        public bool RedirectOnce { get; set; }
 
         private ActionExecutingContext context;
         private string[] _Permissions { get; set; }
@@ -33,11 +35,27 @@ namespace HRS.Filters
             context = _context;
             var sessionManager = context.HttpContext.RequestServices.GetService<ISessionManager>();
             var userRole = sessionManager.GetRole();
+            var actionName = ((ControllerActionDescriptor)context.ActionDescriptor).ActionName;
+           
             if (Permissions != null && sessionManager.IsLoggedIn())
             {
                 _Permissions = Permissions.Replace(" ", "").Split(",", StringSplitOptions.RemoveEmptyEntries);
                 if (_Permissions.Any(x => x == userRole))
+                {
+                    if (RedirectOnce == true)
+                    {
+                        var _redirected = sessionManager._getString("Redirected");
+                        if (!string.IsNullOrEmpty(_redirected) && _redirected.Contains(actionName + ":" + AuthorizedRedirectUri))
+                            return;
+                        else
+                            if (!string.IsNullOrEmpty(_redirected))
+                            sessionManager._setString("Redirected", _redirected + ";" + (actionName + ":" + AuthorizedRedirectUri));
+                        else
+                            sessionManager._setString("Redirected", (actionName + ":" + AuthorizedRedirectUri));
+                    }
                     Redirect(HttpStatusCode.Redirect, AuthorizedRedirectUri);
+                }
+               
             }          
         }
 
@@ -45,8 +63,7 @@ namespace HRS.Filters
         {
             if (context != null)
             {
-                context.HttpContext.Response.StatusCode = (int)code;
-                context.HttpContext.Response.Redirect(RedirectTo);
+                context.Result = new RedirectResult(RedirectTo);
             }
         }
     }
