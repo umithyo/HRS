@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace HRS.Filters
 {
@@ -18,7 +19,7 @@ namespace HRS.Filters
     public class PermissionAuthorize : ActionFilterAttribute, IActionFilter
     {
         public string Permissions { get; set; }
-        public bool IsApi { get; set; }
+        private bool IsApi { get; set; }
         private string _unauthorizedRedirectUri;
         public string UnauthorizedRedirectUri {
             get {
@@ -40,6 +41,10 @@ namespace HRS.Filters
         public override void OnActionExecuting(ActionExecutingContext _context)
         {
             context = _context;
+            IsApi = ((ControllerActionDescriptor)context.ActionDescriptor)
+                .ControllerTypeInfo
+                .CustomAttributes
+                .Any(x => x.AttributeType == typeof(ApiControllerAttribute));
             var sessionManager = context.HttpContext.RequestServices.GetService<ISessionManager>();
             var userRole = sessionManager.GetRole();
             if (Permissions != null)
