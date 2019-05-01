@@ -15,7 +15,7 @@ namespace HRS.Controllers
 {
     [Route("api")]
     [ApiController]
-    [PermissionAuthorize]
+    //[PermissionAuthorize]
     public class AjaxController : ControllerBase
     {
         private readonly ManagerContext context;
@@ -48,7 +48,7 @@ namespace HRS.Controllers
         {
             var hospitals = context.Hospitals
                 .Include(x => x.City)
-                .Include(x=>x.Town)
+                .Include(x => x.Town)
                 .Select(x => new { id = x.Id, name = x.Name, cityName = x.City.Name, townName = x.Town.Name, createdAt = x.CreatedAt })
                 .OrderByDescending(x=>x.createdAt)
                 .ToList();
@@ -56,18 +56,40 @@ namespace HRS.Controllers
         }
 
         [HttpPost("CreateHospital")]
-        public IActionResult CreateHospital([FromForm] IFormCollection form)
+        public IActionResult CreateHospital([FromForm] Hospital hospital, [FromForm] IFormCollection form)
         {
-            var hospital = new Hospital();
-            int cityId, townId;
+            var form_clinics = form["Clinics"];
+            var clinics = new List<Clinic>();
+            foreach (var item in form_clinics)
+            {
+                var converted = Int32.TryParse(item, out int id);
+                if (converted)
+                {
+                    var clinic = context.Clinics.FirstOrDefault(x => x.Id == id);
+                    clinics.Add(clinic);
+                }
+            }
+            var status = hospitalManager.CreateHospital(hospital, clinics);
+            if (status == ManagerStatus.OK)
+                return Ok();
+            else
+                return BadRequest(GetErrorString(status));
+        }
 
-            if (!Int32.TryParse(form["City.Id"].ToString(), out cityId) || !Int32.TryParse(form["Town.Id"].ToString(), out townId))
-                return BadRequest("Hatalı şehir ve/veya ilçe seçimi.");
-            hospital.Name = form["Name"];
-            hospital.City = context.Cities.FirstOrDefault(x=>x.Id == cityId);
-            hospital.Town = context.Towns.FirstOrDefault(x => x.Id == townId);
-            hospitalManager.CreateHospital(hospital);
-            return Ok();
+        [HttpGet("GetClinics")]
+        public IActionResult GetClinics()
+        {
+            return Ok (context.Clinics.ToList());
+        }
+
+        [HttpPost("CreateClinic")]
+        public IActionResult CreateClinic([FromForm] Clinic clinic)
+        {
+            var status = hospitalManager.CreateClinic(clinic);
+            if (status == ManagerStatus.OK)
+                return Ok();
+            else
+                return BadRequest(GetErrorString(status));
         }
     }
 }
