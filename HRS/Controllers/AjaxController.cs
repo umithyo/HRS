@@ -15,7 +15,7 @@ namespace HRS.Controllers
 {
     [Route("api")]
     [ApiController]
-    //[PermissionAuthorize(IsApi = true)]
+    [PermissionAuthorize]
     public class AjaxController : ControllerBase
     {
         private readonly ManagerContext context;
@@ -49,7 +49,9 @@ namespace HRS.Controllers
             var hospitals = context.Hospitals
                 .Include(x => x.City)
                 .Include(x=>x.Town)
-                .Select(x => new { id = x.Id, name = x.Name, cityName = x.City.Name, townName = x.Town.Name, createdAt = x.CreatedAt });
+                .Select(x => new { id = x.Id, name = x.Name, cityName = x.City.Name, townName = x.Town.Name, createdAt = x.CreatedAt })
+                .OrderByDescending(x=>x.createdAt)
+                .ToList();
             return Ok(hospitals);
         }
 
