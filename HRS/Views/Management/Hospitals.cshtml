@@ -5,6 +5,7 @@
     ViewData["Description"] = "Hastaneleri Düzenle";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     var cities = ViewBag.Cities as IEnumerable<City>;
+    var clinics = ViewBag.Clinics as IEnumerable<Clinic>;
 }
 
 <div class="row">
@@ -12,7 +13,7 @@
         <div class="box">
             <div class="box-header">
                 <h3>
-                    <button class="btn btn-app btn-success" data-toggle="modal" data-target="#modal-create">
+                    <button class="btn btn-app" data-toggle="modal" data-target="#modal-create">
                         <span class="badge bg-green">Yeni ekle</span>
                         <i class="fa fa-plus"></i>
                     </button>
@@ -23,7 +24,7 @@
                 <table class="table" id="table" style="overflow-y:auto; max-height:100vh;">
                     <thead>
                         <tr>
-                            <th></th>
+                            @*<th></th>*@
                             <th></th>
                             <th></th>
                             <th>Hastane Adı</th>
@@ -31,7 +32,7 @@
                             <th>Bulunduğu İlçe</th>
                             <th></th>
                         </tr>
-                    </thead>                    
+                    </thead>
                 </table>
             </div>
         </div>
@@ -48,7 +49,7 @@
                 <div class="modal-body">
                     <form onsubmit="return false;" id="createForm">
                         <div class="form-group">
-                            <input class="form-control" asp-for="Name" />
+                            <input class="form-control" asp-for="Name" placeholder="Hastane Adı" />
                             <span asp-validation-for="Name" class="text-red"></span>
                         </div>
                         <div class="form-group">
@@ -67,10 +68,21 @@
                             </select>
                             <span asp-validation-for="Town.Id" class="text-red"></span>
                         </div>
+                        <div class="form-group">
+                            <label>Klinikler</label>
+                            <select class="form-control select2" multiple="multiple" name="Clinics" data-placeholder="Select a State"
+                                    style="width: 100%;">
+                                @foreach (var item in clinics)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }                                                 
+                            </select>
+                        </div>
+
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary pull-right" onclick="createHospital()">Oluştur</button>
+                    <button type="button" class="btn btn-primary pull-left" onclick="createHospital()">Oluştur</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">İptal</button>
                 </div>
             </div>
@@ -83,6 +95,7 @@
 
 @section Scripts{
     <script>
+
         var dt = $('#table').DataTable({
             "language": {
                 "url": "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Turkish.json"
@@ -101,21 +114,21 @@
                 // }
             },
             "order": [2, "desc"],
-           
+            "select": { style: "multi" },
             "columnDefs":
                 [{
-                    "orderable": false,
-                    "checkboxes": true,
-                    "targets": 0
+                    
+                    "targets": 0,
+                    //"checkboxes": true,
                 },
                 {
-                    "targets": [6],
+                    "targets": [5],
                     "visible": true,
                     "searchable": false,
                     "orderable": false
                 },
                 {
-                    "targets": [1, 2],
+                    "targets": [0, 1],
                     "visible": false,
                     "searchable": false,
                     "orderable": false
@@ -123,9 +136,9 @@
                 {
                     targets: -1,
                     className: 'text-center'
-                }],     
+                }],
             "columns": [
-                { "data": null },
+                //{ "data": null },
                 { "data": "id" },
                 { "data": "createdAt" },
                 { "data": "name" },
@@ -133,13 +146,18 @@
                 { "data": "townName" },
                 {
                     "data": null, "render": function (data, type, row) {
-                        return '<div class = "btn-group"><button class = "btn btn-warning" onclick = "loadFromId(\'' + row.id + '\')"><i class="fa fa-edit"></i></button> <button class = "btn btn-danger" onclick = "remove(\'' + row.id + '\')"><i class="fa fa-trash"></i></button></div>';
+                        return''+
+                        '<div class = "btn-group">' +
+                            '<button class = "btn btn-warning" onclick = "loadFromId(\'' + row.id + '\')"><i class="fa fa-edit"></i></button>' +
+                            '<button class = "btn btn-danger" onclick = "remove(\'' + row.id + '\')"><i class="fa fa-trash"></i></button>' +
+                            '<button class = "btn btn-info" onclick = "info(\'' + row.id + '\')"><i class="fa fa-info"></i></button>' +
+                        '</div>';
                     }
-                },              
+                },
             ],
-        });      
+        });
 
-        
+
         function loadFromId(id) {
             $.ajax({
                 url: "/api/GetHospital/" + id,
@@ -150,8 +168,7 @@
             })
 
         }
-
-        $(document).ready(function () {           
+        $(document).ready(function () {
             let dep = [
                 { dependee: '#citySelect', dependant: '#townSelect', url: "/api/GetTowns", firstdependee: "İl", firstdependant: "İlçe" },
             ];
@@ -159,6 +176,7 @@
             $.each(dep, function () {
                 regDependentSelect(this.dependee, this.dependant, this.url, this.firstdependee, this.firstdependant);
             });
+            $('.select2').select2();
         });
 
         function createHospital() {
@@ -168,15 +186,14 @@
                 url: "/api/CreateHospital",
                 type: "post",
                 data: formData,
-                success: function () {toastr.success("Hastane kaydı başarıyla oluşturuldu.")},
+                success: function () { toastr.success("Hastane kaydı başarıyla oluşturuldu.") },
                 complete: function () {
                     $("#modal-create").modal("hide");
                     dt.ajax.reload();
                 }
             });
-                     
-        }
 
+        }
     </script>
 
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
