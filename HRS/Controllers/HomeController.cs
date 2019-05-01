@@ -27,7 +27,7 @@ namespace HRS
         }
 
         [PermissionAuthorize]
-        [RedirectFilter(Permissions = RoleConfig.Admin, AuthorizedRedirectUri = "/Management/Index")]
+        [RedirectFilter(Permissions = RoleConfig.Admin, AuthorizedRedirectUri = "/Management/Index", RedirectOnce = true)]
         public IActionResult Index()
         {
             ViewBag.Cities = context.Cities.ToList();
