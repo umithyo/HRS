@@ -70,8 +70,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="createHospital()">Oluştur</button>
-                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary pull-right" onclick="createHospital()">Oluştur</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">İptal</button>
                 </div>
             </div>
             <!-- /.modal-content -->
@@ -151,33 +151,7 @@
 
         }
 
-        $(document).ready(function () {
-            function regDependentSelect(dependeeDOMId, dependantDOMId, url, dependeeFirstOption, dependantFirstOption, twoWay) {
-                $(dependeeDOMId).on('change', function () {
-                    $(dependantDOMId).html("<option>" + dependantFirstOption + "</option>");
-                    if (this.value != dependeeFirstOption) {
-                        if (twoWay == null) {
-                            $(dependantDOMId).html("<option>Yükleniyor...</option>");
-                        }
-                        $.ajax({
-                            url: url + "/" + this.value,
-                            success: function (data) {
-                                if (twoWay == null) {
-                                    $(dependantDOMId).html("<option>" + dependantFirstOption + "</option>");
-                                } else {
-                                    let current = $(dependantDOMId).find("option").children();
-                                    console.log(current);
-                                }
-
-                                $.each(data, function () {
-                                    $(dependantDOMId).append($("<option />").val(this.id).text(this.name));
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-
+        $(document).ready(function () {           
             let dep = [
                 { dependee: '#citySelect', dependant: '#townSelect', url: "/api/GetTowns", firstdependee: "İl", firstdependant: "İlçe" },
             ];

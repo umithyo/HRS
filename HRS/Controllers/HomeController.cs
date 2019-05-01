@@ -31,7 +31,7 @@ namespace HRS
         public IActionResult Index()
         {
             ViewBag.Cities = context.Cities.ToList();
-            ViewBag.Polyclinics = context.Polyclinics.ToList();
+            ViewBag.Clinics = context.Clinics.ToList();
             ViewBag.Hospitals = context.Hospitals.ToList();
             return View();
         }

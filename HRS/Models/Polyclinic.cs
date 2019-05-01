@@ -11,11 +11,15 @@ namespace HRS.Models
     {
         [Key]
         public int Id { get; set; }
-        [Display(Name ="Poliklinik Adı")]
+        [Display(Name = "Muayene Yeri")]
         [Required(ErrorMessage = "Bu alan zorunludur.")]
         public string Name { get; set; }
-        public List<HospitalPolyclinic> HospitalPolyclinics { get; set; }
-
+        [Display(Name = "Klinik")]
+        [Required(ErrorMessage = "Bu alan zorunludur.")]
+        public virtual Clinic Clinic { get; set; }
+        [Display(Name = "Hastane")]
+        [Required(ErrorMessage = "Bu alan zorunludur.")]
+        public virtual Hospital Hospital { get; set; }
         [Column(TypeName = "TIMESTAMP")]
         public DateTime CreatedAt { get; set; }
     }

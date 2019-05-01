@@ -17,11 +17,14 @@ namespace HRS.Models
         [Display(Name = "Doktor")]
         [Required(ErrorMessage = "Bu alan zorunludur.")]
         public virtual User Doctor { get; set; }
+        [Display (Name = "Muayene yeri")]
+        [Required(ErrorMessage = "Bu alan zorunludur.")]
+        public virtual Polyclinic Polyclinic { get; set; }
         [Column(TypeName = "TIMESTAMP")]
         [Display(Name = "Tarih")]
         [DataType(DataType.DateTime, ErrorMessage = "Geçerli bir tarih giriniz.")]
         [Required(ErrorMessage = "Bu alan zorunludur.")]
-        public DateTime Time { get; set; }
+        public DateTime Time { get; set; }       
         [Column(TypeName = "TIMESTAMP")]
         public DateTime CreatedAt { get; set; }
     }

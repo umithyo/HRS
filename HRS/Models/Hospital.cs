@@ -18,7 +18,7 @@ namespace HRS.Models
         public virtual City City { get; set; }
         [Required(ErrorMessage = "Bu alan zorunludur.")]
         public virtual Town Town { get; set; }
-        public List<HospitalPolyclinic> HospitalPolyclinics { get; set; }
+        public List<HospitalClinic> HospitalClinics { get; set; }
 
         [Column(TypeName = "TIMESTAMP")]
         public DateTime CreatedAt { get; set; }

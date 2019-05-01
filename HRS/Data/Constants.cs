@@ -26,13 +26,13 @@ namespace HRS.Data
                 Header = "Klinikler",
                 Description = "Klinikleri düzenle",
                 Icon = "ion ion-medkit",
-                Action = "Polyclinics",
+                Action = "Clinics",
                 BackgroundClass = "bg-yellow" },
             new ManagementDashboardPagesVM{
                 Header = "Poliklinikler",
                 Description = "Poliklinikleri düzenle",
                 Icon = "ion ion-medkit",
-                Action = "Clinics",
+                Action = "Polyclinics",
                 BackgroundClass = "bg-orange" },
             new ManagementDashboardPagesVM{
                 Header = "İller",

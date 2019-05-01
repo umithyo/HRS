@@ -24,7 +24,7 @@ namespace HRS.Models
         public string Password { get; set; }
         public string Role { get; set; } = RoleConfig.User;
         //If doctor;
-        public Clinic Clinic { get; set; }
+        public Polyclinic Clinic { get; set; }
         public Hospital Hospital { get; set; }
 
         [Column(TypeName ="TIMESTAMP")]

@@ -7,7 +7,7 @@
     var user = sessionManager.GetUser();
     var userinfo = userManager.GetUserInfo(user);
     var cities = ViewBag.Cities as IEnumerable<City>;
-    var polyclinics = ViewBag.Polyclinics as IEnumerable<Polyclinic>;
+    var clinics = ViewBag.Clinics as IEnumerable<Clinic>;
     var hospitals = ViewBag.Hospitals as IEnumerable<Hospital>;
 }
 
@@ -47,7 +47,7 @@
             <div class="input-group mb-3 il">
                 <select class="custom-select" id="polyclinicSelect">
                     <option selected>Klinik</option>
-                    @foreach (var item in polyclinics)
+                    @foreach (var item in clinics)
                     {
                         <option value="@item.Id">@item.Name</option>
                     }
@@ -155,33 +155,7 @@
 
 @section Scripts{ 
     <script>
-        $(document).ready(function () {
-            function regDependentSelect(dependeeDOMId, dependantDOMId, url, dependeeFirstOption, dependantFirstOption, twoWay) {
-                $(dependeeDOMId).on('change', function () {  
-                    $(dependantDOMId).html("<option>"+dependantFirstOption+"</option>");
-                    if (this.value != dependeeFirstOption) {
-                        if (twoWay == null) {
-                            $(dependantDOMId).html("<option>Yükleniyor...</option>");
-                        }
-                        $.ajax({
-                            url: url + "/" + this.value,
-                            success: function (data) {
-                                if (twoWay == null) {
-                                    $(dependantDOMId).html("<option>" + dependantFirstOption + "</option>");
-                                } else {
-                                    let current = $(dependantDOMId).find("option").children();
-                                    console.log(current);
-                                }
-                                
-                                $.each(data, function () {
-                                    $(dependantDOMId).append($("<option />").val(this.id).text(this.name));
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-
+        $(document).ready(function () {            
             let dep = [
                 { dependee: '#citySelect', dependant: '#townSelect', url: "/api/GetTowns", firstdependee: "İl", firstdependant:"İlçe"},
                 { dependee: '#hospitalSelect', dependant: '#polyclinicSelect', url: "/api/GetPolyclinics", firstdependee: "Klinik", firstdependant: "Hastane" },
