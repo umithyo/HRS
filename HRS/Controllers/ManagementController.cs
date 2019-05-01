@@ -11,7 +11,7 @@ using static HRS.Helpers.Utils;
 
 namespace HRS.Controllers
 {
-    //[PermissionAuthorize(Permissions = RoleConfig.Admin, UnauthorizedRedirectUri = "/Home/Index")]
+    [PermissionAuthorize(Permissions = RoleConfig.Admin+","+RoleConfig.Operator+","+RoleConfig.Founder, UnauthorizedRedirectUri = "/Home/Index")]
     public class ManagementController : Controller
     {
         private readonly ManagerContext context;
@@ -32,6 +32,12 @@ namespace HRS.Controllers
         public IActionResult Hospitals()
         {
             ViewBag.Cities = context.Cities.ToList();
+            ViewBag.Clinics = context.Clinics.ToList();
+            return View();
+        }
+
+        public IActionResult Clinics()
+        {
             return View();
         }
     }
