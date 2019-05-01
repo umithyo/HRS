@@ -11,7 +11,7 @@ namespace HRS.Models
         [Key]
         public int Id { get; set; }
         [Display(Name = "İl Adı")]
-        [Required(ErrorMessage = "Bu alan zorunludur.")]
+        //[Required(ErrorMessage = "Bu alan zorunludur.")]
         public string Name { get; set; }
         public List<Town> Towns { get; set; }
     }

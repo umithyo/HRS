@@ -11,10 +11,10 @@ namespace HRS.Models
         [Key]
         public int Id { get; set; }
         [Display(Name = "İlçe Adı")]
-        [Required(ErrorMessage = "Bu alan zorunludur.")]
+        //[Required(ErrorMessage = "Bu alan zorunludur.")]
         public string Name { get; set; }
         [Display(Name = "İl")]
-        [Required(ErrorMessage = "Bu alan zorunludur.")]
+        //[Required(ErrorMessage = "Bu alan zorunludur.")]
         public City City { get; set; }     
     }
 }
