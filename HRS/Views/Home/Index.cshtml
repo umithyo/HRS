@@ -1,8 +1,4 @@
 ﻿@{
-    if (!sessionManager.IsLoggedIn())
-    {
-        return;
-    }
     var role = sessionManager.GetRole();
     var user = sessionManager.GetUser();
     var userinfo = userManager.GetUserInfo(user);
@@ -165,8 +161,6 @@
             $.each(dep, function () {
                 regDependentSelect(this.dependee, this.dependant, this.url, this.firstdependee, this.firstdependant);
             });
-
-            console.log("değişiklik test");
         });
     </script>
 }
