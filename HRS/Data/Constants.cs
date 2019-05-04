@@ -13,37 +13,37 @@ namespace HRS.Data
             new ManagementDashboardPagesVM{
                 Header = "Hastaneler",
                 Description = "Hastaneleri düzenle",
-                Icon = "ion ion-home",
+                Icon = "fa fa-h-square",
                 Action = "Hospitals",
                 BackgroundClass = "bg-aqua" },
             new ManagementDashboardPagesVM{
                 Header = "Kullanıcılar",
                 Description = "Kullanıcıları düzenle",
-                Icon = "ion ion-person-add",
+                Icon = "fa fa-user-md",
                 Action = "Users",
                 BackgroundClass = "bg-green" },
             new ManagementDashboardPagesVM{
                 Header = "Klinikler",
                 Description = "Klinikleri düzenle",
-                Icon = "ion ion-medkit",
+                Icon = "fa fa-hospital-o",
                 Action = "Clinics",
                 BackgroundClass = "bg-yellow" },
             new ManagementDashboardPagesVM{
                 Header = "Poliklinikler",
                 Description = "Poliklinikleri düzenle",
-                Icon = "ion ion-medkit",
+                Icon = "fa fa-stethoscope",
                 Action = "Polyclinics",
                 BackgroundClass = "bg-orange" },
             new ManagementDashboardPagesVM{
                 Header = "İller",
                 Description = "İlleri düzenle",
-                Icon = "ion ion-outlet",
+                Icon = "fa fa-map-o",
                 Action = "Cities",
                 BackgroundClass = "bg-light-blue" },
             new ManagementDashboardPagesVM{
                 Header = "İlçeler",
                 Description = "İlçeleri düzenle",
-                Icon = "ion ion-outlet",
+                Icon = "fa fa-map-marker",
                 Action = "Towns",
                 BackgroundClass = "bg-lime" },
         };
