@@ -14,6 +14,14 @@
                         <span class="badge bg-green">Yeni ekle</span>
                         <i class="fa fa-plus"></i>
                     </button>
+                    <button class="btn btn-app" data-toggle="modal" data-target="#modal-edit">
+                        <span class="badge bg-yellow">Düzenle</span>
+                        <i class="fa fa-edit"></i>
+                    </button>
+                    <button class="btn btn-app" data-toggle="modal" data-target="#modal-delete">
+                        <span class="badge bg-red">Sil</span>
+                        <i class="fa fa-trash"></i>
+                    </button>
                 </h3>
             </div>
             <!-- /.box-header -->
@@ -25,7 +33,6 @@
                             <th></th>
                             <th></th>
                             <th>Klinik Adı</th>
-                            <th></th>
                         </tr>
                     </thead>
                 </table>
@@ -90,12 +97,6 @@
                     //"checkboxes": true,
                 },
                 {
-                    "targets": [3],
-                    "visible": true,
-                    "searchable": false,
-                    "orderable": false
-                },
-                {
                     "targets": [0, 1],
                     "visible": false,
                     "searchable": false,
@@ -109,17 +110,7 @@
                 //{ "data": null },
                 { "data": "id" },
                 { "data": "createdAt" },
-                { "data": "name" },
-                {
-                    "data": null, "render": function (data, type, row) {
-                        return''+
-                        '<div class = "btn-group">' +
-                            '<button class = "btn btn-warning" onclick = "loadFromId(\'' + row.id + '\')"><i class="fa fa-edit"></i></button>' +
-                            '<button class = "btn btn-danger" onclick = "remove(\'' + row.id + '\')"><i class="fa fa-trash"></i></button>' +
-                            '<button class = "btn btn-info" onclick = "info(\'' + row.id + '\')"><i class="fa fa-info"></i></button>' +
-                        '</div>';
-                    }
-                },
+                { "data": "name" },              
             ],
         });
 
