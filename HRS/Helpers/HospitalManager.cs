@@ -13,6 +13,8 @@ namespace HRS.Helpers
         ManagerStatus CreateHospital(Hospital hospital);
         ManagerStatus CreateHospital(Hospital hospital, List<Clinic> clinic);
         ManagerStatus CreateClinic(Clinic clinic);
+        ManagerStatus UpdateClinic(int id, Clinic clinic);
+        ManagerStatus RemoveClinic(int id);
     }
 
     public class HospitalManager:IHospitalManager
@@ -33,7 +35,7 @@ namespace HRS.Helpers
         public ManagerStatus CreateHospital(Hospital hospital)
         {
             if (context.Hospitals.Any(x => x.Name == hospital.Name))
-                return ManagerStatus.UNKNOWN;
+                return ManagerStatus.NOT_FOUND;
             hospital.CreatedAt = DateTime.Now;
             hospital.City = context.Cities.FirstOrDefault(x => x.Id == hospital.City.Id);
             hospital.Town = context.Towns.FirstOrDefault(x => x.Id == hospital.Town.Id);
@@ -45,7 +47,7 @@ namespace HRS.Helpers
         public ManagerStatus CreateHospital(Hospital hospital, List<Clinic> clinics)
         {
             if (context.Hospitals.Any(x => x.Name == hospital.Name))
-                return ManagerStatus.UNKNOWN;          
+                return ManagerStatus.NOT_FOUND;          
             hospital.CreatedAt = DateTime.Now;
             hospital.City = context.Cities.FirstOrDefault(x => x.Id == hospital.City.Id);
             hospital.Town = context.Towns.FirstOrDefault(x => x.Id == hospital.Town.Id);
@@ -67,10 +69,30 @@ namespace HRS.Helpers
         public ManagerStatus CreateClinic(Clinic clinic)
         {
             if (context.Clinics.Any(x => x.Name == clinic.Name))
-                return ManagerStatus.UNKNOWN;
+                return ManagerStatus.NOT_FOUND;
             clinic.CreatedAt = DateTime.Now;
             context.Add(clinic);
             context.SaveChanges();
+            return ManagerStatus.OK;
+        }
+
+        public ManagerStatus UpdateClinic(int id, Clinic _clinic)
+        {
+            var clinic = context.Clinics.FirstOrDefault(x => x.Id == id);
+            if (clinic == null)
+                return ManagerStatus.NOT_FOUND;
+            clinic.Name = _clinic.Name;
+            context.SaveChanges();
+            return ManagerStatus.OK;
+        }
+
+        public ManagerStatus RemoveClinic(int id)
+        {
+            var clinic = context.Clinics.FirstOrDefault(x => x.Id == id);
+            if (clinic == null)
+                return ManagerStatus.NOT_FOUND;
+            context.Remove(clinic);
+            context.SaveChanges(); 
             return ManagerStatus.OK;
         }
     }

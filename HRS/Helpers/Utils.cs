@@ -55,6 +55,8 @@ namespace HRS.Helpers
                     return "Bu telefon numarası ile başka bir kullanıcı zaten kayıtlı.";
                 case ManagerStatus.USER_WRONG_CREDENTIALS:
                     return "Giriş bilgileri yanlış, lütfen doğru TC Kimlik NO ve şifre girdiğinizden emin olun.";
+                case ManagerStatus.NOT_FOUND:
+                    return "Aradığınız öğe bulunamadı.";
                 default:
                     return "";
             }

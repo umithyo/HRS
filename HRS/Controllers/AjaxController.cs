@@ -9,6 +9,7 @@ using HRS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using static HRS.Helpers.Utils;
 
 namespace HRS.Controllers
@@ -55,6 +56,15 @@ namespace HRS.Controllers
             return Ok(hospitals);
         }
 
+        [HttpGet("GetHospital/{id}")]
+        public IActionResult GetHospital(int id)
+        {
+            var hospital = context.Hospitals.FirstOrDefault(x => x.Id == id);
+            if (hospital == null)
+                return NotFound();
+            return Ok(hospital);
+        }
+
         [HttpPost("CreateHospital")]
         public IActionResult CreateHospital([FromForm] Hospital hospital, [FromForm] IFormCollection form)
         {
@@ -82,6 +92,15 @@ namespace HRS.Controllers
             return Ok(context.Clinics.ToList());
         }
 
+        [HttpGet("GetClinic/{id}")]
+        public IActionResult GetClinic(int id)
+        {
+            var clinic = context.Clinics.FirstOrDefault(x => x.Id == id);
+            if (clinic == null)
+                return NotFound();
+            return Ok(clinic);
+        }
+
         [HttpPost("CreateClinic")]
         public IActionResult CreateClinic([FromForm] Clinic clinic)
         {
@@ -90,6 +109,33 @@ namespace HRS.Controllers
                 return Ok();
             else
                 return BadRequest(GetErrorString(status));
+        }
+
+        [HttpPut("UpdateClinic/{id}")]
+        public IActionResult UpdateClinic (int id, [FromForm] Clinic clinic)
+        {
+            var status = hospitalManager.UpdateClinic(id, clinic);
+            if (status == ManagerStatus.OK)
+                return Ok();
+            else
+                return BadRequest(GetErrorString(status));
+        }
+
+        [HttpPost("DeleteClinic")]
+        public IActionResult DeleteClinic([FromBody] JObject clinics)
+        {
+            var error = "";
+            foreach (var item in clinics["clinics"])
+            {
+                var status = hospitalManager.RemoveClinic(Convert.ToInt32(item["id"]));
+                if (status != ManagerStatus.OK)
+                    error = GetErrorString(status);
+            }
+            
+            if (string.IsNullOrEmpty(error))
+                return Ok();
+            else
+                return BadRequest(error);
         }
     }
 }
