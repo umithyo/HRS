@@ -20,6 +20,12 @@ namespace HRS.Models
         [Display (Name = "Muayene yeri")]
         [Required(ErrorMessage = "Bu alan zorunludur.")]
         public virtual Polyclinic Polyclinic { get; set; }
+        [Display(Name = "Klinik")]
+        [Required(ErrorMessage = "Bu alan zorunludur.")]
+        public virtual Clinic Clinic { get; set; }
+        [Display(Name = "Hastane")]
+        [Required(ErrorMessage = "Bu alan zorunludur.")]
+        public virtual Hospital Hospital { get; set; }
         [Column(TypeName = "TIMESTAMP")]
         [Display(Name = "Tarih")]
         [DataType(DataType.DateTime, ErrorMessage = "Geçerli bir tarih giriniz.")]

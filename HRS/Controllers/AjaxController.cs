@@ -79,7 +79,7 @@ namespace HRS.Controllers
         [HttpGet("GetClinics")]
         public IActionResult GetClinics()
         {
-            return Ok (context.Clinics.ToList());
+            return Ok(context.Clinics.ToList());
         }
 
         [HttpPost("CreateClinic")]
