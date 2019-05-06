@@ -57,6 +57,8 @@ namespace HRS.Helpers
                     return "Giriş bilgileri yanlış, lütfen doğru TC Kimlik NO ve şifre girdiğinizden emin olun.";
                 case ManagerStatus.NOT_FOUND:
                     return "Aradığınız öğe bulunamadı.";
+                case ManagerStatus.EXISTS:
+                    return "Böyle bir öğe zaten mevcut.";
                 default:
                     return "";
             }
