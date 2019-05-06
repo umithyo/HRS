@@ -184,6 +184,7 @@
                 type: "get",
                 success: function (data) {
                     $('#editForm input[name=Name]').val(data.name);
+                    $('#editButton').off('click');
                     $('#editButton').on("click", function () { updateClinic(data.id) });
                 }
             })

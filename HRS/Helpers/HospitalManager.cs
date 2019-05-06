@@ -1,6 +1,7 @@
 ﻿using HRS.Data;
 using HRS.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,11 +69,12 @@ namespace HRS.Helpers
             return ManagerStatus.OK;
         }
 
-        public ManagerStatus UpdateHospital(Hospital hospital, List<Clinic> clinics)
+        public ManagerStatus UpdateHospital(Hospital _hospital, List<Clinic> clinics)
         {
-            if (!context.Hospitals.Any(x => x.Id == hospital.Id))
+            if (!context.Hospitals.Any(x => x.Id == _hospital.Id))
                 return ManagerStatus.NOT_FOUND;
-            
+            var hospital = context.Hospitals.Include(x=>x.HospitalClinics).FirstOrDefault(x => x.Id == _hospital.Id);
+            hospital.HospitalClinics.Clear();
             hospital.HospitalClinics = new List<HospitalClinic>();
             foreach (var clinic in clinics)
             {
@@ -83,9 +85,10 @@ namespace HRS.Helpers
                 };
                 hospital.HospitalClinics.Add(link);
             }
-            hospital.City = context.Cities.FirstOrDefault(x => x.Id == hospital.City.Id);
-            hospital.Town = context.Towns.FirstOrDefault(x => x.Id == hospital.Town.Id);
-            hospital.Name = hospital.Name;
+            hospital.City = context.Cities.FirstOrDefault(x => x.Id ==_hospital.City.Id);
+            hospital.Town = context.Towns.FirstOrDefault(x => x.Id == _hospital.Town.Id);
+            hospital.Name = _hospital.Name;
+            context.Update(hospital);
             context.SaveChanges();
             return ManagerStatus.OK;
         }

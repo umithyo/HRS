@@ -91,7 +91,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary pull-left" onclick="createHospital()">Oluştur</button>
+                    <button id="createButton" type="button" class="btn btn-primary pull-left" onclick="createHospital()">Oluştur</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">İptal</button>
                 </div>
             </div>
@@ -244,7 +244,17 @@
 
             $('.select2').select2();
         });
+
+        function loader(element, state) {
+            if (state == true) {
+                $(element).html('Lütfen bekleyin <i class="fa fa-spinner fa-spin"></i>');
+            } else {
+                $(element).html(state);
+            }
+        }
+
         function createHospital() {
+            loader('#createButton', true);
             var formData = $("#createForm").serialize();
             console.log(formData);
             $.ajax({
@@ -254,6 +264,7 @@
                 success: function () { toastr.success("Hastane kaydı başarıyla oluşturuldu.") },
                 complete: function () {
                     $("#modal-create").modal("hide");
+                    loader('#createButton', "Oluştur");
                     dt.ajax.reload();
                 }
             });
@@ -301,6 +312,7 @@
                         //});
 
                     });
+                    $('#editButton').off("click");
                     $('#editButton').on("click", function () { updateHospital(data.id) });
                 }
             })
@@ -308,13 +320,15 @@
 
         function updateHospital(id) {
             var formData = $("#editForm").serialize();
+            loader('#editButton', true);
             $.ajax({
                 url: "/api/UpdateHospital/" + id,
                 type: "put",
                 data: formData,
-                success: function () { dt.ajax.reload(); toastr.success("Klinik kaydı başarıyla güncellendi.") },
+                success: function () { dt.ajax.reload(); toastr.success("Hastane kaydı başarıyla güncellendi.") },
                 complete: function () {
                     $("#modal-edit").modal("hide");
+                    loader('#editButton', 'Güncelle');
                 }
             });
         }
@@ -331,6 +345,7 @@
                 data.push({ id: value.id });
             });
             console.log(JSON.stringify(data))
+            $("#delete")
             $('#deleteButton').on('click', function () {
                 $.ajax({
                     url: "/api/DeleteHospital",
