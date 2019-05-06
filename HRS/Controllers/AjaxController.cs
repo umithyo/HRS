@@ -27,14 +27,18 @@ namespace HRS.Controllers
             context = _context;
             hospitalManager = _hospitalManager;
         }
+        #region CRUD
 
+        #region Cities
         [HttpGet("GetCities")]
         public IActionResult GetCities()
         {
             var cities = context.Cities.ToList();
             return Ok(cities);
         }
+        #endregion
 
+        #region Towns
         [HttpGet("GetTowns/{id}")]         
         public IActionResult GetTowns(int? id)
         {
@@ -43,7 +47,9 @@ namespace HRS.Controllers
             var towns = context.Towns.Where(x => x.City.Id == id).ToList();
             return Ok(towns);
         }
+        #endregion
 
+        #region Hospitals
         [HttpGet("GetHospitals")]
         public IActionResult GetHospitals()
         {
@@ -59,7 +65,9 @@ namespace HRS.Controllers
         [HttpGet("GetHospital/{id}")]
         public IActionResult GetHospital(int id)
         {
-            var hospital = context.Hospitals.FirstOrDefault(x => x.Id == id);
+            var hospital = context.Hospitals
+                .Select(x=> new { x.Id, x.Name, cityId = x.City.Id, townId = x.Town.Id, x.CreatedAt, clinics = x.HospitalClinics.Where(k=>k.HospitalId == id).Select(k => k.Clinic).ToList() })
+                .FirstOrDefault(x => x.Id == id);
             if (hospital == null)
                 return NotFound();
             return Ok(hospital);
@@ -86,6 +94,46 @@ namespace HRS.Controllers
                 return BadRequest(GetErrorString(status));
         }
 
+        [HttpPut("UpdateHospital/{id}")]
+        public IActionResult UpdateHospital(int id, [FromForm] Hospital hospital, [FromForm] IFormCollection form)
+        {
+            var form_clinics = form["Clinics"];
+            var clinics = new List<Clinic>();
+            foreach (var item in form_clinics)
+            {
+                var converted = Int32.TryParse(item, out int cid);
+                if (converted)
+                {
+                    var clinic = context.Clinics.FirstOrDefault(x => x.Id == cid);
+                    clinics.Add(clinic);
+                }
+            }
+            hospital.Id = id;
+            var status = hospitalManager.UpdateHospital(hospital, clinics);
+            if (status == ManagerStatus.OK)
+                return Ok();
+            else
+                return BadRequest(GetErrorString(status));
+        }
+
+        [HttpDelete("DeleteHospital")]
+        public IActionResult DeleteHospital([FromBody] JObject hospitals)
+        {
+            var error = "";
+            foreach (var item in hospitals["hospitals"])
+            {
+                var status = hospitalManager.RemoveHospital(Convert.ToInt32(item["id"]));
+                if (status != ManagerStatus.OK)
+                    error = GetErrorString(status);
+            }
+
+            if (string.IsNullOrEmpty(error))
+                return Ok();
+            return BadRequest(error);
+        }
+        #endregion
+
+        #region Clinics
         [HttpGet("GetClinics")]
         public IActionResult GetClinics()
         {
@@ -121,7 +169,7 @@ namespace HRS.Controllers
                 return BadRequest(GetErrorString(status));
         }
 
-        [HttpPost("DeleteClinic")]
+        [HttpDelete("DeleteClinic")]
         public IActionResult DeleteClinic([FromBody] JObject clinics)
         {
             var error = "";
@@ -134,8 +182,9 @@ namespace HRS.Controllers
             
             if (string.IsNullOrEmpty(error))
                 return Ok();
-            else
-                return BadRequest(error);
+            return BadRequest(error);
         }
+        #endregion
+        #endregion CRUD
     }
 }
