@@ -19,6 +19,7 @@
                         $.each(data, function () {
                             $(dependantDOMId).append($("<option />").val(this.id).text(this.name));
                         });
+                        $(dependeeDOMId).trigger("OptionsLoaded");
                     }
                 });
             }

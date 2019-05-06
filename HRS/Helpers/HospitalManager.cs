@@ -12,6 +12,8 @@ namespace HRS.Helpers
     {
         ManagerStatus CreateHospital(Hospital hospital);
         ManagerStatus CreateHospital(Hospital hospital, List<Clinic> clinic);
+        ManagerStatus UpdateHospital(Hospital hospital, List<Clinic> clinic);
+        ManagerStatus RemoveHospital(int id);
         ManagerStatus CreateClinic(Clinic clinic);
         ManagerStatus UpdateClinic(int id, Clinic clinic);
         ManagerStatus RemoveClinic(int id);
@@ -35,7 +37,7 @@ namespace HRS.Helpers
         public ManagerStatus CreateHospital(Hospital hospital)
         {
             if (context.Hospitals.Any(x => x.Name == hospital.Name))
-                return ManagerStatus.NOT_FOUND;
+                return ManagerStatus.EXISTS;
             hospital.CreatedAt = DateTime.Now;
             hospital.City = context.Cities.FirstOrDefault(x => x.Id == hospital.City.Id);
             hospital.Town = context.Towns.FirstOrDefault(x => x.Id == hospital.Town.Id);
@@ -47,7 +49,7 @@ namespace HRS.Helpers
         public ManagerStatus CreateHospital(Hospital hospital, List<Clinic> clinics)
         {
             if (context.Hospitals.Any(x => x.Name == hospital.Name))
-                return ManagerStatus.NOT_FOUND;          
+                return ManagerStatus.EXISTS;          
             hospital.CreatedAt = DateTime.Now;
             hospital.City = context.Cities.FirstOrDefault(x => x.Id == hospital.City.Id);
             hospital.Town = context.Towns.FirstOrDefault(x => x.Id == hospital.Town.Id);
@@ -62,6 +64,38 @@ namespace HRS.Helpers
                 hospital.HospitalClinics.Add(link);
             }
             context.Add(hospital);
+            context.SaveChanges();
+            return ManagerStatus.OK;
+        }
+
+        public ManagerStatus UpdateHospital(Hospital hospital, List<Clinic> clinics)
+        {
+            if (!context.Hospitals.Any(x => x.Id == hospital.Id))
+                return ManagerStatus.NOT_FOUND;
+            
+            hospital.HospitalClinics = new List<HospitalClinic>();
+            foreach (var clinic in clinics)
+            {
+                var link = new HospitalClinic()
+                {
+                    Clinic = clinic,
+                    Hospital = hospital
+                };
+                hospital.HospitalClinics.Add(link);
+            }
+            hospital.City = context.Cities.FirstOrDefault(x => x.Id == hospital.City.Id);
+            hospital.Town = context.Towns.FirstOrDefault(x => x.Id == hospital.Town.Id);
+            hospital.Name = hospital.Name;
+            context.SaveChanges();
+            return ManagerStatus.OK;
+        }
+
+        public ManagerStatus RemoveHospital(int id)
+        {
+            var hospital = context.Hospitals.FirstOrDefault(x => x.Id == id);
+            if (hospital == null)
+                return ManagerStatus.NOT_FOUND;
+            context.Remove(hospital);
             context.SaveChanges();
             return ManagerStatus.OK;
         }

@@ -1,4 +1,11 @@
-﻿<html>
+﻿@{ 
+    var role = "anon";
+    if (sessionManager.IsLoggedIn())
+    {
+        role = sessionManager.GetRole();
+    }
+}
+<html>
 <head>
     <title>RANDEVU AL</title>
     <meta charset="UTF-8">

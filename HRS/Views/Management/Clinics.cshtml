@@ -232,7 +232,7 @@
             $('#deleteButton').on('click', function () {
                 $.ajax({
                     url: "/api/DeleteClinic",
-                    type: "post",
+                    type: "delete",
                     contentType: "application/json",
                     data: JSON.stringify({ clinics: data }),
                     success: function () { dt.ajax.reload(); toastr.warning("Seçili veriler silindi.") },
