@@ -185,6 +185,9 @@ namespace HRS.Controllers
             return BadRequest(error);
         }
         #endregion
+
+        #region Users
+        #endregion
         #endregion CRUD
     }
 }
