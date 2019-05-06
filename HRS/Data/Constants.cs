@@ -58,6 +58,7 @@ namespace HRS.Data
         USER_EMAIL_EXISTS,
         USER_PHONE_EXISTS,
         USER_WRONG_CREDENTIALS,
-        NOT_FOUND
+        NOT_FOUND,
+        EXISTS
     };
 }
