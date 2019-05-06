@@ -111,7 +111,7 @@ namespace HRS.Helpers
                     return ManagerStatus.USER_NOT_FOUND;
 
                 context.Update(_user);
-                if (_userinfo != null && _user.Id == _userinfo.User.Id)
+                if (_userinfo != null)
                     context.Update(_userinfo);
 
                 context.SaveChanges();
