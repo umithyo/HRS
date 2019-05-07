@@ -248,8 +248,10 @@
         function loader(element, state) {
             if (state == true) {
                 $(element).html('Lütfen bekleyin <i class="fa fa-spinner fa-spin"></i>');
+                $(element).addClass("disabled");
             } else {
                 $(element).html(state);
+                $(element).removeClass("disabled");
             }
         }
 
@@ -287,11 +289,16 @@
 
 
         function loadFromId(id) {
+            $('#editForm #citySelect option').removeAttr("selected");
+            $('#editForm #townSelect option').removeAttr("selected");
+            $('#editForm #clinicSelect option').removeAttr("selected");
+            $('#editForm #clinicSelect').trigger("change");
             $.ajax({
                 url: "/api/GetHospital/" + id,
                 type: "get",
                 success: function (data) {
                     $('#editForm input[name=Name]').val(data.name);
+                    console.log(data)
                     $('#editForm #citySelect option[value="' + data.cityId + '"]').attr("selected", "selected");
                     $('#editForm #citySelect').on("OptionsLoaded", function () {
                         //console.log($('#editForm #townSelect option').length);
@@ -301,7 +308,7 @@
                     $('#editForm #citySelect').trigger("change");                   
                     
                     $.each(data.clinics, function (_, value) {
-                        console.log(value);
+                        //console.log(value);
                         $('#editForm #clinicSelect option[value="' + value.id + '"]').attr("selected", "selected");
                         $('#editForm #clinicSelect').trigger("change");
                         //$('#editForm #clinicSelect').on('select2:unselect', function (e) {
