@@ -351,9 +351,10 @@
             $.each(rows, function (key, value) {
                 data.push({ id: value.id });
             });
-            console.log(JSON.stringify(data))
+            console.log(JSON.stringify(data))           
             $("#delete")
             $('#deleteButton').on('click', function () {
+                loader('#deleteButton', true);
                 $.ajax({
                     url: "/api/DeleteHospital",
                     type: "delete",
@@ -362,6 +363,7 @@
                     success: function () { dt.ajax.reload(); toastr.warning("Seçili veriler silindi.") },
                     complete: function () {
                         $("#modal-delete").modal("hide");
+                        loader('#deleteButton', true);
                     }
                 });
             });
