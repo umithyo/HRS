@@ -44,7 +44,7 @@ namespace HRS.Helpers
             switch (status)
             {
                 case ManagerStatus.UNKNOWN:
-                    return "Bilinmeyen bir hata oluştu, kullanıcı kaydı tamamlanamadı.";
+                    return "Bilinmeyen bir hata oluştu.";
                 case ManagerStatus.USER_NOT_FOUND:
                     return "Böyle bir kullanıcı bulunamadı";
                 case ManagerStatus.USER_TC_EXISTS:
