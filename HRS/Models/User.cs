@@ -1,10 +1,11 @@
-﻿using System;
+﻿using HRS.Data;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
-using static HRS.Helpers.Utils;
+using static HRS.Data.Constants;
 
 namespace HRS.Models
 {
@@ -23,9 +24,7 @@ namespace HRS.Models
         [DataType(DataType.Password)]
         public string Password { get; set; }
         public string Role { get; set; } = RoleConfig.User;
-        //If doctor;
-        public Polyclinic Clinic { get; set; }
-        public Hospital Hospital { get; set; }
+        public virtual UserInfo UserInfo { get; set; }
 
         [Column(TypeName ="TIMESTAMP")]
         public DateTime CreatedAt { get; set; }

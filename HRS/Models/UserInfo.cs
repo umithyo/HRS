@@ -11,7 +11,7 @@ namespace HRS.Models
     {
         [Key]
         public Guid Id { get; set; }
-        public virtual User User { get; set; }
+
         [Required(ErrorMessage = "Bu alan zorunludur.")]
         [Display(Name = "İsim", Prompt = "İsim")]
         public string Name { get; set; }
@@ -25,6 +25,9 @@ namespace HRS.Models
         [DataType(DataType.PhoneNumber, ErrorMessage = "Lütfen geçerli bir telefon numarası girin.")]
         [Display(Name = "Telefon", Prompt = "Telefon numarası")]
         public string Phone { get; set; }
+        //If doctor;
+        public virtual Clinic Clinic { get; set; }
+        public virtual Hospital Hospital { get; set; }
 
         [Column(TypeName = "TIMESTAMP")]
         public DateTime CreatedAt { get; set; }
