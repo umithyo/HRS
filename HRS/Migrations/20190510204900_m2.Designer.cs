@@ -9,14 +9,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRS.Migrations
 {
     [DbContext(typeof(ManagerContext))]
-    [Migration("20190501123857_m1")]
-    partial class m1
+    [Migration("20190510204900_m2")]
+    partial class m2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("ProductVersion", "2.1.8-servicing-32085")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("HRS.Models.Appointment", b =>
@@ -24,10 +24,14 @@ namespace HRS.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int>("ClinicId");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TIMESTAMP");
 
                     b.Property<Guid>("DoctorId");
+
+                    b.Property<int>("HospitalId");
 
                     b.Property<Guid>("PatientId");
 
@@ -38,7 +42,11 @@ namespace HRS.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ClinicId");
+
                     b.HasIndex("DoctorId");
+
+                    b.HasIndex("HospitalId");
 
                     b.HasIndex("PatientId");
 
@@ -52,8 +60,7 @@ namespace HRS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Name")
-                        .IsRequired();
+                    b.Property<string>("Name");
 
                     b.HasKey("Id");
 
@@ -142,10 +149,9 @@ namespace HRS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("CityId");
+                    b.Property<int?>("CityId");
 
-                    b.Property<string>("Name")
-                        .IsRequired();
+                    b.Property<string>("Name");
 
                     b.HasKey("Id");
 
@@ -159,12 +165,8 @@ namespace HRS.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("ClinicId");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TIMESTAMP");
-
-                    b.Property<int?>("HospitalId");
 
                     b.Property<string>("Password")
                         .IsRequired();
@@ -175,11 +177,11 @@ namespace HRS.Migrations
                         .IsRequired()
                         .HasMaxLength(11);
 
+                    b.Property<Guid?>("UserInfoId");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ClinicId");
-
-                    b.HasIndex("HospitalId");
+                    b.HasIndex("UserInfoId");
 
                     b.ToTable("Users");
                 });
@@ -189,11 +191,15 @@ namespace HRS.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int?>("ClinicId");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TIMESTAMP");
 
                     b.Property<string>("Email")
                         .IsRequired();
+
+                    b.Property<int?>("HospitalId");
 
                     b.Property<string>("Name")
                         .IsRequired();
@@ -203,20 +209,30 @@ namespace HRS.Migrations
                     b.Property<string>("Surname")
                         .IsRequired();
 
-                    b.Property<Guid?>("UserId");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ClinicId");
+
+                    b.HasIndex("HospitalId");
 
                     b.ToTable("UserInfos");
                 });
 
             modelBuilder.Entity("HRS.Models.Appointment", b =>
                 {
+                    b.HasOne("HRS.Models.Clinic", "Clinic")
+                        .WithMany()
+                        .HasForeignKey("ClinicId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("HRS.Models.User", "Doctor")
                         .WithMany()
                         .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("HRS.Models.Hospital", "Hospital")
+                        .WithMany()
+                        .HasForeignKey("HospitalId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("HRS.Models.User", "Patient")
@@ -273,26 +289,25 @@ namespace HRS.Migrations
                 {
                     b.HasOne("HRS.Models.City", "City")
                         .WithMany("Towns")
-                        .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("CityId");
                 });
 
             modelBuilder.Entity("HRS.Models.User", b =>
                 {
-                    b.HasOne("HRS.Models.Polyclinic", "Clinic")
+                    b.HasOne("HRS.Models.UserInfo", "UserInfo")
+                        .WithMany()
+                        .HasForeignKey("UserInfoId");
+                });
+
+            modelBuilder.Entity("HRS.Models.UserInfo", b =>
+                {
+                    b.HasOne("HRS.Models.Clinic", "Clinic")
                         .WithMany()
                         .HasForeignKey("ClinicId");
 
                     b.HasOne("HRS.Models.Hospital", "Hospital")
                         .WithMany()
                         .HasForeignKey("HospitalId");
-                });
-
-            modelBuilder.Entity("HRS.Models.UserInfo", b =>
-                {
-                    b.HasOne("HRS.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }

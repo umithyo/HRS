@@ -3,19 +3,20 @@ using System;
 using HRS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HRS.Migrations
 {
     [DbContext(typeof(ManagerContext))]
-    partial class ManagerContextModelSnapshot : ModelSnapshot
+    [Migration("20190510203537_m1")]
+    partial class m1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.8-servicing-32085")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("ProductVersion", "2.1.8-servicing-32085");
 
             modelBuilder.Entity("HRS.Models.Appointment", b =>
                 {
@@ -175,11 +176,7 @@ namespace HRS.Migrations
                         .IsRequired()
                         .HasMaxLength(11);
 
-                    b.Property<Guid?>("UserInfoId");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserInfoId");
 
                     b.ToTable("Users");
                 });
@@ -207,11 +204,15 @@ namespace HRS.Migrations
                     b.Property<string>("Surname")
                         .IsRequired();
 
+                    b.Property<Guid?>("UserId");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ClinicId");
 
                     b.HasIndex("HospitalId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserInfos");
                 });
@@ -290,13 +291,6 @@ namespace HRS.Migrations
                         .HasForeignKey("CityId");
                 });
 
-            modelBuilder.Entity("HRS.Models.User", b =>
-                {
-                    b.HasOne("HRS.Models.UserInfo", "UserInfo")
-                        .WithMany()
-                        .HasForeignKey("UserInfoId");
-                });
-
             modelBuilder.Entity("HRS.Models.UserInfo", b =>
                 {
                     b.HasOne("HRS.Models.Clinic", "Clinic")
@@ -306,6 +300,10 @@ namespace HRS.Migrations
                     b.HasOne("HRS.Models.Hospital", "Hospital")
                         .WithMany()
                         .HasForeignKey("HospitalId");
+
+                    b.HasOne("HRS.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }
