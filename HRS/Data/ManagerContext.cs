@@ -14,6 +14,7 @@ namespace HRS.Data
         {
             optionsBuilder.UseMySql(ConnectionStrings["MySQL"]);
             //optionsBuilder.UseSqlServer(ConnectionStrings["MSSQL"]);
+            //optionsBuilder.UseSqlite(ConnectionStrings["Sqlite"]);
         }
 
         public DbSet<Appointment> Appointments { get; set; }
