@@ -22,7 +22,7 @@
                 <i class="fa fa-sign-in" aria-hidden="true"></i>
                 <text href="#" class="link">Giriş Yap</text>
             </button>
-            <button class="col-md-8 user hvr-shutter-in-vertical hvr-round-corners" data-aos="fade-down" type="submit" formnovalidate="formnovalidate" asp-action="Register" formmethod="get">
+            <button class="col-md-8 user hvr-shutter-in-vertical hvr-round-corners" type="button" data-aos="fade-down" formnovalidate="formnovalidate" asp-action="Register" onclick="window.location.href = '@Url.Action("Register", "Home")';">
                 <i class="fa fa-user" aria-hidden="true"></i>
                 <text href="#" class="link">Üye Ol</text>
             </button>
