@@ -7,6 +7,7 @@ using HRS.Filters;
 using HRS.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using static HRS.Data.Constants;
 using static HRS.Helpers.Utils;
 
 namespace HRS.Controllers
@@ -37,6 +38,23 @@ namespace HRS.Controllers
         }
 
         public IActionResult Clinics()
+        {
+            return View();
+        }
+
+        public IActionResult Users()
+        {
+            ViewBag.Clinics = context.Clinics.ToList();
+            ViewBag.Hospitals = context.Hospitals.ToList();
+            return View();
+        }
+
+        public IActionResult Polyclinics()
+        {
+            return View();
+        }
+
+        public IActionResult Appointments()
         {
             return View();
         }
