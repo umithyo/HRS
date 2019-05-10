@@ -9,15 +9,7 @@ using System.Threading.Tasks;
 namespace HRS.Helpers
 {
     public static class Utils
-    {
-        public static class RoleConfig
-        {
-            public const string Founder = "Developer";
-            public const string Admin = "Yönetici";
-            public const string Operator = "Operatör";
-            public const string User = "Kullanıcı";
-        }
-
+    {       
         public static class HashString
         {
             public static string GetMD5(string text)

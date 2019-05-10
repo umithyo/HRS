@@ -47,6 +47,23 @@ namespace HRS.Data
                 Action = "Towns",
                 BackgroundClass = "bg-lime" },
         };
+
+        public static class RoleConfig
+        {
+            public const string Founder = "Developer";
+            public const string Admin = "Yönetici";
+            public const string Doctor = "Doktor";
+            public const string Operator = "Operatör";
+            public const string User = "Kullanıcı";
+
+            public static string[] Roles = new string[] {
+                Founder,
+                Admin,
+                Doctor,
+                Operator,
+                User
+            };
+        }
     }
 
     public enum ManagerStatus
@@ -61,4 +78,6 @@ namespace HRS.Data
         NOT_FOUND,
         EXISTS
     };
+
+   
 }
