@@ -41,7 +41,7 @@
                 </select>
             </div>
             <div class="input-group mb-3 il">
-                <select class="custom-select" id="polyclinicSelect">
+                <select class="custom-select" id="clinicSelect">
                     <option selected>Klinik</option>
                     @foreach (var item in clinics)
                     {
@@ -149,18 +149,20 @@
     </div>
 </div>
 
-@section Scripts{ 
+@section Scripts{
     <script>
-        $(document).ready(function () {            
+        $(document).ready(function () {
             let dep = [
-                { dependee: '#citySelect', dependant: '#townSelect', url: "/api/GetTowns", firstdependee: "İl", firstdependant:"İlçe"},
-                { dependee: '#hospitalSelect', dependant: '#polyclinicSelect', url: "/api/GetPolyclinics", firstdependee: "Klinik", firstdependant: "Hastane" },
-                { dependee: '#polyclinicSelect', dependant: '#hospitalSelect', url: "/api/GetHospitals", firstdependee: "Hastane", firstdependant: "Klinik"},
+                { dependee: '#citySelect', dependant: '#townSelect', url: "/api/GetTowns", firstdependee: "İl", firstdependant: "İlçe" },
+                { dependee: '#citySelect', dependant: '#hospitalSelect', url: "/api/GetHospitalByCity", firstdependee: "İl", firstdependant: "Hastane" },
+                { dependee: '#townSelect', dependant: '#hospitalSelect', url: "/api/GetHospitalByTown", firstdependee: "İl", firstdependant: "Hastane" },
             ];
 
             $.each(dep, function () {
                 regDependentSelect(this.dependee, this.dependant, this.url, this.firstdependee, this.firstdependant);
             });
+
+            
         });
     </script>
 }
