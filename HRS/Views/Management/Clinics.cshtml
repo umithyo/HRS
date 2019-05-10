@@ -195,6 +195,14 @@
                     $('#editForm input[name=Name]').val(data.name);
                     $('#editButton').off('click');
                     $('#editButton').on("click", function () { updateClinic(data.id) });
+                },
+                error: function (err, status) {
+                    console.log(err.responseText)
+                    if (status == 404) {
+                        toastr.error("Aradığınız öğe bulunamadı.");
+                        return;
+                    }
+                    toastr.error(err.responseText);
                 }
             })
         }        
@@ -211,6 +219,14 @@
                 complete: function () {
                     $("#modal-create").modal("hide");   
                     loader('#createButton', "Oluştur");
+                },
+                error: function (err, status) {
+                    console.log(err.responseText)
+                    if (status == 404) {
+                        toastr.error("Aradığınız öğe bulunamadı.");
+                        return;
+                    }
+                    toastr.error(err.responseText);
                 }
             });
 
@@ -227,6 +243,14 @@
                 complete: function () {
                     $("#modal-edit").modal("hide");   
                     loader('#editButton', "Güncelle");
+                },
+                error: function (err, status) {
+                    console.log(err.responseText)
+                    if (status == 404) {
+                        toastr.error("Aradığınız öğe bulunamadı.");
+                        return;
+                    }
+                    toastr.error(err.responseText);
                 }
             });
         }
@@ -254,6 +278,14 @@
                     complete: function () {
                         $("#modal-delete").modal("hide");
                         loader('#createButton', "Sil");
+                    },
+                    error: function (err, status) {
+                        console.log(err.responseText)
+                        if (status == 404) {
+                            toastr.error("Aradığınız öğe bulunamadı.");
+                            return;
+                        }
+                        toastr.error(err.responseText);
                     }
                 });
             });

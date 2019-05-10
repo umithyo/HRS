@@ -167,7 +167,7 @@
                 <ol class="breadcrumb">
 
                     <li><a asp-action="Index" asp-controller="Management"><i class="fa fa-dashboard"></i> Anasayfa</a></li>
-                    @if (ViewData["Title"] != "Anasayfa")
+                    @if (ViewData["Title"].ToString() != "Anasayfa")
                     {
                         <li class="active">@ViewData["Title"]</li>
                     }
