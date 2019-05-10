@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using static HRS.Data.Constants;
 using static HRS.Helpers.Utils;
 
 namespace HRS.Helpers
@@ -22,6 +23,7 @@ namespace HRS.Helpers
         ManagerStatus Register(User user, UserInfo userinfo);
         ManagerStatus SignIn(User _user);
         ManagerStatus UpdateUser(User _user, UserInfo _userinfo);
+        ManagerStatus RemoveUser(Guid id);
     }
 
     public class UserManager : IUserManager
@@ -41,7 +43,7 @@ namespace HRS.Helpers
 
         public UserInfo GetUserInfo(User user)
         {
-            return context.UserInfos.Include(x => x.User).Where(x => x.User.Id == user.Id).FirstOrDefault();
+            return context.Users.Include(x => x.UserInfo).Where(x => x.Id == user.Id).Select(x=>x.UserInfo).FirstOrDefault();
         }
 
         public User GetUser(Guid id)
@@ -56,7 +58,7 @@ namespace HRS.Helpers
 
         public bool UserExists(Guid id)
         {
-            return GetUser(id) != null;
+            return context.Users.Any(x => x.Id == id);
         }
 
         public ManagerStatus Register(User user, UserInfo userInfo)
@@ -69,10 +71,9 @@ namespace HRS.Helpers
 
                 user.CreatedAt = DateTime.Now;
                 userInfo.CreatedAt = DateTime.Now;
-                user.Role = RoleConfig.User;
 
                 user.Password = HashString.GetMD5(user.Password);
-                userInfo.User = user;
+                user.UserInfo = userInfo;
 
                 context.Add(user);
                 context.Add(userInfo);
@@ -109,11 +110,31 @@ namespace HRS.Helpers
             {
                 if (!UserExists(_user.Id))
                     return ManagerStatus.USER_NOT_FOUND;
-
-                context.Update(_user);
+                               
                 if (_userinfo != null)
+                {
                     context.Update(_userinfo);
+                }
+                context.Update(_user);
 
+                context.SaveChanges();
+                return ManagerStatus.OK;
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.Write(e.Message);
+                return ManagerStatus.UNKNOWN;
+            }
+        }
+
+        public ManagerStatus RemoveUser(Guid id)
+        {
+            try
+            {
+                var user = context.Users.FirstOrDefault(x => x.Id == id);
+                if (user == null)
+                    return ManagerStatus.NOT_FOUND;
+                context.Remove(user);
                 context.SaveChanges();
                 return ManagerStatus.OK;
             }

@@ -1,0 +1,447 @@
+﻿@model User
+@{
+    ViewData["Title"] = "Kullanıcılar";
+    ViewData["Description"] = "Kullanıcıları Düzenle";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var clinics = ViewBag.Clinics as IEnumerable<Clinic>;
+    var hospitals = ViewBag.Hospitals as IEnumerable<Hospital>;
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box">
+            <div class="box-header">
+                <h3>
+                    <button class="btn btn-app" data-toggle="modal" data-target="#modal-create">
+                        <span class="badge bg-green">Yeni ekle</span>
+                        <i class="fa fa-plus"></i>
+                    </button>
+                    <button class="btn btn-app" data-toggle="modal" data-target="#modal-edit">
+                        <span class="badge bg-yellow">Düzenle</span>
+                        <i class="fa fa-edit"></i>
+                    </button>
+                    <button class="btn btn-app" data-toggle="modal" data-target="#modal-delete">
+                        <span class="badge bg-red">Sil</span>
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <table class="table" id="table" style="overflow-y:auto; max-height:100vh;">
+                    <thead>
+                        <tr>
+                            @*<th></th>*@
+                            <th></th>
+                            <th></th>
+                            <th>TC Kimlik Numarası</th>
+                            <th>Adı</th>
+                            <th>Soyadı</th>
+                            <th>Rolü</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-create">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Kullanıcı Ekle</h4>
+                </div>
+                <div class="modal-body">
+                    <form onsubmit="return false;" id="createForm">
+                        <div class="form-group">
+                            <input class="form-control" asp-for="TCKimlikNo" placeholder="TC Kimlik No" />
+                            <span asp-validation-for="TCKimlikNo" class="text-red"></span>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" asp-for="Password" placeholder="Şifre" />
+                            <span asp-validation-for="Password" class="text-red"></span>
+                        </div>
+                        <div class="form-group">
+                            <select asp-for="Role" class="form-control">
+                                <option>Kullanıcı Rolü</option>
+                                @foreach (var item in Constants.RoleConfig.Roles)
+                                {
+                                    <option>@item</option>
+                                }
+                            </select>
+                            <span asp-validation-for="Role" class="text-red"></span>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" asp-for="UserInfo.Name" placeholder="Adı" />
+                            <span asp-validation-for="UserInfo.Name" class="text-red"></span>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" asp-for="UserInfo.Surname" placeholder="Soyadı" />
+                            <span asp-validation-for="UserInfo.Surname" class="text-red"></span>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" asp-for="UserInfo.Email" placeholder="Email Adresi" />
+                            <span asp-validation-for="UserInfo.Email" class="text-red"></span>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" asp-for="UserInfo.Phone" placeholder="Telefon Numarası" />
+                            <span asp-validation-for="UserInfo.Phone" class="text-red"></span>
+                        </div>
+                        <div class="ifDoctor">
+                            <div class="form-group">
+                                <select id="clinicSelect" class="form-control" asp-for="UserInfo.Clinic">
+                                    <option>Klinik</option>
+                                    @foreach (var item in clinics)
+                                    {
+                                        <option value="@item.Id">@item.Name</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select id="hospitalSelect" class="form-control" asp-for="UserInfo.Hospital">
+                                    <option>Hastane</option>
+                                    @foreach (var item in hospitals)
+                                    {
+                                        <option value="@item.Id">@item.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                    </form>
+                    <div class="modal-footer">
+                        <button id="createButton" type="submit" class="btn btn-primary pull-left" onclick="createUser()">Oluştur</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">İptal</button>
+                    </div>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+    <div class="modal fade" id="modal-edit">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Kullanıcı Düzenle</h4>
+                </div>
+                <div class="modal-body">
+                    <form onsubmit="return false;" id="editForm">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="CreatedAt" />
+                        <input type="hidden" asp-for="Password" />
+                        <input type="hidden" asp-for="UserInfo.Id" />
+                        <input type="hidden" asp-for="UserInfo.CreatedAt" />
+                        <div class="form-group">
+                            <input class="form-control" asp-for="TCKimlikNo" placeholder="TC Kimlik No" />
+                            <span asp-validation-for="TCKimlikNo" class="text-red"></span>
+                        </div>
+                        <div class="form-group">
+                            <select asp-for="Role" class="form-control">
+                                <option>Kullanıcı Rolü</option>
+                                @foreach (var item in Constants.RoleConfig.Roles)
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            </select>
+                            <span asp-validation-for="Role" class="text-red"></span>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" asp-for="UserInfo.Name" placeholder="Adı" />
+                            <span asp-validation-for="UserInfo.Name" class="text-red"></span>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" asp-for="UserInfo.Surname" placeholder="Soyadı" />
+                            <span asp-validation-for="UserInfo.Surname" class="text-red"></span>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" asp-for="UserInfo.Email" placeholder="Email Adresi" />
+                            <span asp-validation-for="UserInfo.Email" class="text-red"></span>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" asp-for="UserInfo.Phone" placeholder="Telefon Numarası" />
+                            <span asp-validation-for="UserInfo.Phone" class="text-red"></span>
+                        </div>
+                        <div class="ifDoctor">
+                            <div class="form-group">
+                                <select id="clinicSelect" class="form-control" asp-for="UserInfo.Clinic">
+                                    <option>Klinik</option>
+                                    @foreach (var item in clinics)
+                                    {
+                                        <option value="@item.Id">@item.Name</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select id="hospitalSelect" class="form-control" asp-for="UserInfo.Hospital">
+                                    <option>Hastane</option>
+                                    @foreach (var item in hospitals)
+                                    {
+                                        <option value="@item.Id">@item.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="editButton" class="btn btn-primary pull-left">Güncelle</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">İptal</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+    <div class="modal fade" id="modal-delete">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Kullanıcı Sil</h4>
+                </div>
+                <div class="modal-body">
+                    Seçili veriler silinecek, devam etmek istiyor musunuz?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="deleteButton" class="btn btn-danger pull-left">Sil</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">İptal</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+</div>
+
+@section Scripts{
+    <script>
+
+        var dt = $('#table').DataTable({
+            "language": {
+                "url": "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Turkish.json"
+            },
+            serverSide: false,
+            orderMulti: false,
+            "lengthMenu": [[30, 100, 250, -1], [30, 100, 250, "All"]],
+
+            ajax: {
+                type: "get",
+                url: "/api/GetUsers",
+                dataSrc: "",
+                datatype: "json",
+                // success: function(result) {
+                //     console.log(JSON.stringify(result));
+                // }
+            },
+            "order": [2, "desc"],
+            "select": { style: "multi" },
+            "columnDefs":
+                [{
+
+                    "targets": 0,
+                    //"checkboxes": true,
+                },
+                {
+                    "targets": [0, 1],
+                    "visible": false,
+                    "searchable": false,
+                    "orderable": false
+                },
+                {
+                    targets: -1,
+                    className: 'text-center'
+                }],
+            "columns": [
+                //{ "data": null },
+                { "data": "id" },
+                { "data": "createdAt" },
+                { "data": "tcKimlikNo" },             
+                { "data": "userInfo.name" },
+                { "data": "userInfo.surname" },
+                { "data": "role" },
+            ],
+        });
+
+        $('#modal-edit').on('show.bs.modal', function (e) {
+            var rows = dt.rows('.selected').data();
+            if (rows.length > 1) {
+                toastr.error("Birden fazla veriyi düzenleyemezsiniz.");
+                e.preventDefault();
+                return;
+            } else if (rows.length == 0) {
+                toastr.error("Düzenleme yapmak istediğiniz veriyi seçiniz.");
+                e.preventDefault();
+                return;
+            }
+            loadFromId(rows[0].id);
+        });
+
+        function loader(element, state) {
+            if (state == true) {
+                $(element).html('Lütfen bekleyin <i class="fa fa-spinner fa-spin"></i>');
+                $(element).addClass("disabled");
+            } else {
+                $(element).html(state);
+                $(element).removeClass("disabled");
+            }
+        }
+
+    function loadFromId(id) {
+            $.ajax({
+                url: "/api/GetUser/" + id,
+                type: "get",
+                success: function (data) {
+                    console.log(data)
+                    $('#editForm input[name=Id]').val(data.id);                  
+                    $('#editForm input[name=CreatedAt]').val(data.createdAt);
+                    $('#editForm input[name="TCKimlikNo"]').val(data.tcKimlikNo);
+                    $('#editForm input[name="Password"]').val(data.password);
+
+                    $('#editForm input[name="UserInfo.Id"]').val(data.userInfo.id);
+                    $('#editForm input[name="UserInfo.CreatedAt"]').val(data.userInfo.createdAt);
+                    $('#editForm input[name="UserInfo.Name"]').val(data.userInfo.name);
+                    $('#editForm input[name="UserInfo.Surname"]').val(data.userInfo.surname);
+                    $('#editForm input[name="UserInfo.Email"]').val(data.userInfo.email);
+                    $('#editForm input[name="UserInfo.Phone"]').val(data.userInfo.phone);
+
+                    $('#editForm #Role option[value="' + data.role + '"]').attr("selected", "selected");
+                    $('#editForm #Role').trigger("change");
+                    if (data.clinic && data.hospital) {
+                        $('#editForm #clinicSelect option[value="' + data.clinic.id + '"]').attr("selected", "selected");
+                        $('#editForm #hospitalSelect option[value="' + data.hospital.id + '"]').attr("selected", "selected");
+
+                        $('#editForm #clinicSelect').trigger("change");
+                        $('#editForm #hospitalSelect').trigger("change");
+                    }
+
+                    $('#editButton').off('click');
+                    $('#editButton').on("click", function () { updateUser(data.id) });
+                },
+                error: function (err, status) {
+                    console.log(err.responseText)
+                    if (status == 404) {
+                        toastr.error("Aradığınız öğe bulunamadı.");
+                        return;
+                    }
+                    toastr.error(err.responseText);
+                }
+            })
+        }
+
+        function createUser() {
+            loader('#createButton', true);
+            var formData = $("#createForm").serialize();
+            console.log(formData);
+            $.ajax({
+                url: "/api/CreateUser",
+                type: "post",
+                data: formData,
+                success: function () { dt.ajax.reload(); toastr.success("Kullanıcı kaydı başarıyla oluşturuldu.") },
+                complete: function () {
+                    $("#modal-create").modal("hide");
+                    loader('#createButton', "Oluştur");
+                },
+                error: function (err, status) {
+                    console.log(err.responseText)
+                    if (status == 404) {
+                        toastr.error("Aradığınız öğe bulunamadı.");
+                        return;
+                    }
+                    toastr.error(err.responseText);
+                }
+            });
+
+        }
+
+        function updateUser(id) {
+            loader('#editButton', true);
+            var formData = $("#editForm").serialize();
+            $.ajax({
+                url: "/api/UpdateUser/"+id,
+                type: "put",
+                data: formData,
+                success: function () { dt.ajax.reload(); toastr.success("Kullanıcı kaydı başarıyla güncellendi.") },
+                complete: function () {
+                    $("#modal-edit").modal("hide");
+                    loader('#editButton', "Güncelle");
+                },
+                error: function (err, status) {
+                    console.log(err.responseText)
+                    if (status == 404) {
+                        toastr.error("Aradığınız öğe bulunamadı.");
+                        return;
+                    }
+                    toastr.error(err.responseText);
+                }
+            });
+        }
+
+        $('#modal-delete').on('show.bs.modal', function (e) {
+            var rows = dt.rows('.selected').data();
+            if (rows.length == 0) {
+                toastr.error("Silme işlemi için en az 1 veriyi seçmelisiniz.");
+                e.preventDefault();
+                return;
+            }
+            var data = []
+            $.each(rows, function (key, value) {
+                data.push({ id: value.id });
+            });
+            console.log(JSON.stringify(data))
+            $('#deleteButton').on('click', function () {
+                loader('#deleteButton', true);
+                $.ajax({
+                    url: "/api/DeleteUser",
+                    type: "delete",
+                    contentType: "application/json",
+                    data: JSON.stringify({ Users: data }),
+                    success: function () { dt.ajax.reload(); toastr.warning("Seçili veriler silindi.") },
+                    complete: function () {
+                        $("#modal-delete").modal("hide");
+                        loader('#createButton', "Sil");
+                    },
+                    error: function (err, status) {
+                        console.log(err.responseText)
+                        if (status == 404) {
+                            toastr.error("Aradığınız öğe bulunamadı.");
+                            return;
+                        }
+                        toastr.error(err.responseText);
+                    }
+                });
+            });
+        });
+
+    $('.ifDoctor').hide();
+    $('#Role').on("change", function () {
+        if (this.value === "Doktor") {
+            $('.ifDoctor').show();
+        } else {
+            $('.ifDoctor').hide();
+        }
+    });
+
+    $('#editForm #Role').on("change", function () {
+        if (this.value === "Doktor") {
+            $('.ifDoctor').show();
+        } else {
+            $('.ifDoctor').hide();
+        }
+    });
+    </script>
+
+
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

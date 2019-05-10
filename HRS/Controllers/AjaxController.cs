@@ -21,11 +21,13 @@ namespace HRS.Controllers
     {
         private readonly ManagerContext context;
         private readonly IHospitalManager hospitalManager;
+        private readonly IUserManager userManager;
 
-        public AjaxController(ManagerContext _context, IHospitalManager _hospitalManager)
+        public AjaxController(ManagerContext _context, IHospitalManager _hospitalManager, IUserManager _userManager)
         {
             context = _context;
             hospitalManager = _hospitalManager;
+            userManager = _userManager;
         }
         #region CRUD
 
@@ -39,11 +41,11 @@ namespace HRS.Controllers
         #endregion
 
         #region Towns
-        [HttpGet("GetTowns/{id}")]         
+        [HttpGet("GetTowns/{id}")]
         public IActionResult GetTowns(int? id)
         {
             if (id == null)
-                return BadRequest("Hatalı id.");               
+                return BadRequest("Hatalı id.");
             var towns = context.Towns.Where(x => x.City.Id == id).ToList();
             return Ok(towns);
         }
@@ -57,7 +59,7 @@ namespace HRS.Controllers
                 .Include(x => x.City)
                 .Include(x => x.Town)
                 .Select(x => new { id = x.Id, name = x.Name, cityName = x.City.Name, townName = x.Town.Name, createdAt = x.CreatedAt })
-                .OrderByDescending(x=>x.createdAt)
+                .OrderByDescending(x => x.createdAt)
                 .ToList();
             return Ok(hospitals);
         }
@@ -66,11 +68,25 @@ namespace HRS.Controllers
         public IActionResult GetHospital(int id)
         {
             var hospital = context.Hospitals
-                .Select(x=> new { x.Id, x.Name, cityId = x.City.Id, townId = x.Town.Id, x.CreatedAt, clinics = x.HospitalClinics.Where(k=>k.HospitalId == id).Select(k => k.Clinic).ToList() })
+                .Select(x => new { x.Id, x.Name, cityId = x.City.Id, townId = x.Town.Id, x.CreatedAt, clinics = x.HospitalClinics.Where(k => k.HospitalId == id).Select(k => k.Clinic).ToList() })
                 .FirstOrDefault(x => x.Id == id);
             if (hospital == null)
                 return NotFound();
             return Ok(hospital);
+        }
+
+        [HttpGet("GetHospitalByCity/{id}")]
+        public IActionResult GetHospitalByCity(int id)
+        {
+            var hospitals = context.Hospitals.Include(x => x.City).Where(x => x.City.Id == id).ToList();
+            return Ok(hospitals);
+        }
+
+        [HttpGet("GetHospitalByTown/{id}")]
+        public IActionResult GetHospitalByTown(int id)
+        {
+            var hospitals = context.Hospitals.Include(x => x.Town).Where(x => x.Town.Id == id).ToList();
+            return Ok(hospitals);
         }
 
         [HttpPost("CreateHospital")]
@@ -143,7 +159,10 @@ namespace HRS.Controllers
         [HttpGet("GetClinic/{id}")]
         public IActionResult GetClinic(int id)
         {
-            var clinic = context.Clinics.FirstOrDefault(x => x.Id == id);
+            var clinic = context.Clinics
+                .Select(x => new { x.Id, x.Name, x.CreatedAt, hospitals = x.HospitalClinics.Where(k=>k.ClinicId == id).Select(k => k.Hospital).ToList() })
+                .FirstOrDefault(x => x.Id == id);
+                
             if (clinic == null)
                 return NotFound();
             return Ok(clinic);
@@ -160,7 +179,7 @@ namespace HRS.Controllers
         }
 
         [HttpPut("UpdateClinic/{id}")]
-        public IActionResult UpdateClinic (int id, [FromForm] Clinic clinic)
+        public IActionResult UpdateClinic(int id, [FromForm] Clinic clinic)
         {
             var status = hospitalManager.UpdateClinic(id, clinic);
             if (status == ManagerStatus.OK)
@@ -179,7 +198,7 @@ namespace HRS.Controllers
                 if (status != ManagerStatus.OK)
                     error = GetErrorString(status);
             }
-            
+
             if (string.IsNullOrEmpty(error))
                 return Ok();
             return BadRequest(error);
@@ -187,7 +206,62 @@ namespace HRS.Controllers
         #endregion
 
         #region Users
+        [HttpGet("GetUsers/{byRole?}")]
+        public IActionResult GetUsers(string byRole)
+        {
+            if (!string.IsNullOrEmpty(byRole))
+            {
+                return Ok(context.Users.Include(x=>x.UserInfo).Where(x => x.Role == byRole).ToList());
+            }
+            return Ok(context.Users.Include(x=>x.UserInfo).ToList());
+        }
 
+        [HttpGet("GetUser/{id}")]
+        public IActionResult GetUser(Guid id)
+        {
+            var user = context.Users.Include(x=>x.UserInfo).FirstOrDefault(x => x.Id == id);
+            if (user == null)
+                return NotFound();
+            return Ok(user);
+        }
+
+        [HttpPost("CreateUser")]
+        public IActionResult CreateUser([FromForm] User user)
+        {
+            var status = userManager.Register(user, user.UserInfo);
+            if (status == ManagerStatus.OK)
+                return Ok();
+            else
+                return BadRequest(GetErrorString(status));
+        }
+
+        [HttpPut("UpdateUser/{id}")]
+        public IActionResult UpdateUser(Guid id, [FromForm] User _user)
+        {
+
+            _user.Id = id;
+            var status = userManager.UpdateUser(_user, _user.UserInfo);
+            if (status == ManagerStatus.OK)
+                return Ok();
+            else
+                return BadRequest(GetErrorString(status));
+        }
+
+        [HttpDelete("DeleteUser")]
+        public IActionResult DeleteUser([FromBody] JObject users)
+        {
+            var error = "";
+            foreach (var item in users["users"])
+            {
+                var status = userManager.RemoveUser(new Guid(item["id"].ToString()));
+                if (status != ManagerStatus.OK)
+                    error = GetErrorString(status);
+            }
+
+            if (string.IsNullOrEmpty(error))
+                return Ok();
+            return BadRequest(error);
+        }
         #endregion
         #endregion CRUD
     }
