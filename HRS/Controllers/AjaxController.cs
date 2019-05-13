@@ -78,6 +78,7 @@ namespace HRS.Controllers
         [HttpGet("GetHospitalByCity/{id}")]
         public IActionResult GetHospitalByCity(int id)
         {
+           
             var hospitals = context.Hospitals.Include(x => x.City).Where(x => x.City.Id == id).ToList();
             return Ok(hospitals);
         }
