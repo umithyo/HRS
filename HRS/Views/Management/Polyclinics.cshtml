@@ -1,0 +1,468 @@
+﻿@model Polyclinic
+@{
+    ViewData["Title"] = "Poliklinikler";
+    ViewData["Description"] = "Poliklinikleri Düzenle";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+       var clinics = ViewBag.Clinics as IEnumerable<Clinic>;
+    var hospitals = ViewBag.Hospitals as IEnumerable<Hospital>;
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box">
+            <div class="box-header">
+                <h3>
+                    <button class="btn btn-app" data-toggle="modal" data-target="#modal-create">
+                        <span class="badge bg-green">Yeni ekle</span>
+                        <i class="fa fa-plus"></i>
+                    </button>
+                    <button class="btn btn-app" data-toggle="modal" data-target="#modal-edit">
+                        <span class="badge bg-yellow">Düzenle</span>
+                        <i class="fa fa-edit"></i>
+                    </button>
+                    <button class="btn btn-app" data-toggle="modal" data-target="#modal-delete">
+                        <span class="badge bg-red">Sil</span>
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <table class="table" id="table" style="overflow-y:auto; max-height:100vh;">
+                    <thead>
+                        <tr>
+                            @*<th></th>*@
+                            <th></th>
+                            <th></th>
+                            <th>Poliklinik Adı</th>
+                            <th>Bağlı Olduğu Hastane</th>
+                            <th>Bağlı Olduğu Klinik</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal-create">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Poliklinik Ekle</h4>
+                </div>
+                <div class="modal-body">
+                    <form onsubmit="return false;" id="createForm">
+                        <div class="form-group">
+                            <input class="form-control" asp-for="Name" placeholder="Poliklinik Adı" />
+                            <span asp-validation-for="Name" class="text-red"></span>
+                        </div>
+                        <div class="form-group">
+                            <select id="clinicSelect" class="form-control" asp-for="ClinicId">
+                                <option>Klinik</option>
+                                @foreach (var item in clinics)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select id="hospitalSelect" class="form-control" asp-for="HospitalId">
+                                <option>Hastane</option>
+                                @foreach (var item in hospitals)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="createButton" type="button" class="btn btn-primary pull-left" onclick="createPolyclinic()">Oluştur</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">İptal</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+    <div class="modal fade" id="modal-edit">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Poliklinik Düzenle</h4>
+                </div>
+                <div class="modal-body">
+                    <form onsubmit="return false;" id="editForm">
+                        <div class="form-group">
+                            <input class="form-control" asp-for="Name" placeholder="Poliklinik Adı" />
+                            <span asp-validation-for="Name" class="text-red"></span>
+                        </div>
+                        <div class="form-group">
+                            <select id="clinicSelect" class="form-control" asp-for="ClinicId">
+                                <option>Klinik</option>
+                                @foreach (var item in clinics)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select id="hospitalSelect" class="form-control" asp-for="HospitalId">
+                                <option>Hastane</option>
+                                @foreach (var item in hospitals)
+                                {
+                                    <option value="@item.Id">@item.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="editButton" class="btn btn-primary pull-left">Güncelle</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">İptal</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+    <div class="modal fade" id="modal-delete">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Poliklinik Sil</h4>
+                </div>
+                <div class="modal-body">
+                    Seçili veriler silinecek, devam etmek istiyor musunuz?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="deleteButton" class="btn btn-danger pull-left">Sil</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">İptal</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+</div>
+
+@section Scripts{
+    <script>
+
+        var dt = $('#table').DataTable({
+            "language": {
+                "url": "https://cdn.datatables.net/plug-ins/1.10.19/i18n/Turkish.json"
+            },
+            serverSide: false,
+            orderMulti: false,
+            "lengthMenu": [[30, 100, 250, -1], [30, 100, 250, "All"]],
+
+            ajax: {
+                type: "get",
+                url: "/api/GetPolyclinics",
+                dataSrc: "",
+                datatype: "json",
+                // success: function(result) {
+                //     console.log(JSON.stringify(result));
+                // }
+            },
+            "order": [2, "desc"],
+            "select": { style: "multi" },
+            "columnDefs":
+                [{
+
+                    "targets": 0,
+                    //"checkboxes": true,
+                },
+                {
+                    "targets": [0, 1],
+                    "visible": false,
+                    "searchable": false,
+                    "orderable": false
+                },
+                {
+                    targets: -1,
+                    className: 'text-center'
+                }],
+            "columns": [
+                //{ "data": null },
+                { "data": "id" },
+                { "data": "createdAt" },
+                { "data": "name" },
+                { "data": "hospital.name" },
+                { "data": "clinic.name" },
+            ],
+        });
+
+        $('#modal-edit').on('show.bs.modal', function (e) {
+            var rows = dt.rows('.selected').data();
+            if (rows.length > 1) {
+                toastr.error("Birden fazla veriyi düzenleyemezsiniz.");
+                e.preventDefault();
+                return;
+            } else if (rows.length == 0) {
+                toastr.error("Düzenleme yapmak istediğiniz veriyi seçiniz.");
+                e.preventDefault();
+                return;
+            }
+            loadFromId(rows[0].id);
+        });
+
+        function loader(element, state) {
+            if (state == true) {
+                $(element).html('Lütfen bekleyin <i class="fa fa-spinner fa-spin"></i>');
+                $(element).addClass("disabled");
+            } else {
+                $(element).html(state);
+                $(element).removeClass("disabled");
+            }
+        }
+
+        function loadFromId(id) {
+            $.ajax({
+                url: "/api/GetPolyclinic/" + id,
+                type: "get",
+                success: function (data) {
+                    $('#editForm input[name=Name]').val(data.name);
+                     if (data.clinic && data.hospital) {
+                        $('#editForm #clinicSelect option[value="' + data.clinic.id + '"]').attr("selected", "selected");
+                        $('#editForm #hospitalSelect option[value="' + data.hospital.id + '"]').attr("selected", "selected");
+
+                        $('#editForm #clinicSelect').trigger("change");
+                        $('#editForm #hospitalSelect').trigger("change");
+                    }
+                    $('#editButton').off('click');
+                    $('#editButton').on("click", function () { updatePolyclinic(data.id) });
+                },
+                error: function (err, status) {
+                    console.log(err.responseText)
+                    if (status == 404) {
+                        toastr.error("Aradığınız öğe bulunamadı.");
+                        return;
+                    }
+                    toastr.error(err.responseText);
+                }
+            })
+        }
+
+        function createPolyclinic() {
+            loader('#createButton', true);
+            var formData = $("#createForm").serialize();
+            console.log(formData);
+            $.ajax({
+                url: "/api/CreatePolyclinic",
+                type: "post",
+                data: formData,
+                success: function () { dt.ajax.reload(); toastr.success("Poliklinik kaydı başarıyla oluşturuldu.") },
+                complete: function () {
+                    $("#modal-create").modal("hide");
+                    loader('#createButton', "Oluştur");
+                },
+                error: function (err, status) {
+                    console.log(err.responseText)
+                    if (status == 404) {
+                        toastr.error("Aradığınız öğe bulunamadı.");
+                        return;
+                    }
+                    toastr.error(err.responseText);
+                }
+            });
+
+        }
+
+        function updatePolyclinic(id) {
+            loader('#editButton', true);
+            var formData = $("#editForm").serialize();
+            console.log(formData);
+            $.ajax({
+                url: "/api/UpdatePolyclinic/" + id,
+                type: "put",
+                data: formData,
+                success: function () { dt.ajax.reload(); toastr.success("Poliklinik kaydı başarıyla güncellendi.") },
+                complete: function () {
+                    $("#modal-edit").modal("hide");
+                    loader('#editButton', "Güncelle");
+                },
+                error: function (err, status) {
+                    console.log(err.responseText)
+                    if (status == 404) {
+                        toastr.error("Aradığınız öğe bulunamadı.");
+                        return;
+                    }
+                    toastr.error(err.responseText);
+                }
+            });
+        }
+
+        $('#modal-delete').on('show.bs.modal', function (e) {
+            var rows = dt.rows('.selected').data();
+            if (rows.length == 0) {
+                toastr.error("Silme işlemi için en az 1 veriyi seçmelisiniz.");
+                e.preventDefault();
+                return;
+            }
+            var data = []
+            $.each(rows, function (key, value) {
+                data.push({ id: value.id });
+            });
+            console.log(JSON.stringify(data))
+            $('#deleteButton').on('click', function () {
+                loader('#deleteButton', true);
+                $.ajax({
+                    url: "/api/DeletePolyclinic",
+                    type: "delete",
+                    contentType: "application/json",
+                    data: JSON.stringify({ polyclinics: data }),
+                    success: function () { dt.ajax.reload(); toastr.warning("Seçili veriler silindi.") },
+                    complete: function () {
+                        $("#modal-delete").modal("hide");
+                        loader('#createButton', "Sil");
+                    },
+                    error: function (err, status) {
+                        console.log(err.responseText)
+                        if (status == 404) {
+                            toastr.error("Aradığınız öğe bulunamadı.");
+                            return;
+                        }
+                        toastr.error(err.responseText);
+                    }
+                });
+            });
+        });
+
+        $(document).ready(function () {
+            $('#clinicSelect').on("change", function () {
+                var selectedVal = $('#hospitalSelect').find(":selected").val();
+                console.log(selectedVal)
+                $.ajax({
+                    url: "/api/GetClinic/" + this.value,
+                    success: function (data) {
+                        $('#hospitalSelect').empty();
+                        $.each(data.hospitals, function (_, val) {
+                            $("#hospitalSelect").append($("<option />").val(val.id).text(val.name));
+                            if (selectedVal === val.id.toString()) {
+                                $("#hospitalSelect option[value='" + val.id + "']").attr("selected", "selected");
+                            }
+                        });
+
+                    },
+                    error: function () {
+                        $.ajax({
+                            url: "/api/GetClinics",
+                            success: function (data) {
+                                $('#hospitalSelect').empty();
+                                $.each(data.hospitals, function (_, val) {
+                                    $("#hospitalSelect").append($("<option />").val(val.id).text(val.name));
+                                });
+                            }
+                        })
+                    }
+                });
+
+            });
+
+            $('#hospitalSelect').on("change", function () {
+                var selectedVal = $('#clinicSelect').find(":selected").val();
+                console.log(selectedVal)
+                $.ajax({
+                    url: "/api/GetHospital/" + this.value,
+                    success: function (data) {
+                        $('#clinicSelect').empty();
+                        $.each(data.clinics, function (_, val) {
+                            $("#clinicSelect").append($("<option />").val(val.id).text(val.name));
+                            if (selectedVal === val.id.toString()) {
+                                $("#clinicSelect option[value='" + val.id + "']").attr("selected", "selected");
+                            }
+                        });
+
+                    },
+                    error: function () {
+                        $.ajax({
+                            url: "/api/GetHospitals",
+                            success: function (data) {
+                                $('#clinicSelect').empty();
+                                $.each(data.hospitals, function (_, val) {
+                                    $("#clinicSelect").append($("<option />").val(val.id).text(val.name));
+                                });
+                            }
+                        })
+                    }
+                });
+
+            });
+
+            $('#editForm #clinicSelect').on("change", function () {
+                var selectedVal = $('#editForm #hospitalSelect').find(":selected").val();
+                $.ajax({
+                    url: "/api/GetClinic/" + this.value,
+                    success: function (data) {
+                        $('#editForm #hospitalSelect').empty();
+                        $.each(data.hospitals, function (_, val) {
+                            $("#editForm #hospitalSelect").append($("<option />").val(val.id).text(val.name));
+                            if (selectedVal === val.id.toString()) {
+                                $("#editForm #hospitalSelect option[value='" + val.id + "']").attr("selected", "selected");
+                            }
+                        });
+
+                    },
+                    error: function () {
+                        $.ajax({
+                            url: "/api/GetClinics",
+                            success: function (data) {
+                                $('#editForm #hospitalSelect').empty();
+                                $.each(data.hospitals, function (_, val) {
+                                    $("#editForm #hospitalSelect").append($("<option />").val(val.id).text(val.name));
+                                });
+                            }
+                        })
+                    }
+                });
+
+            });
+
+            $('#editForm #hospitalSelect').on("change", function () {
+                var selectedVal = $('#editForm #clinicSelect').find(":selected").val();
+                $.ajax({
+                    url: "/api/GetHospital/" + this.value,
+                    success: function (data) {
+                        $('#editForm #clinicSelect').empty();
+                        $.each(data.clinics, function (_, val) {
+                            $("#editForm #clinicSelect").append($("<option />").val(val.id).text(val.name));
+                            if (selectedVal === val.id.toString()) {
+                                $("#editForm #clinicSelect option[value='" + val.id + "']").attr("selected", "selected");
+                            }
+                        });
+
+                    },
+                    error: function () {
+                        $.ajax({
+                            url: "/api/GetHospitals",
+                            success: function (data) {
+                                $('#editForm #clinicSelect').empty();
+                                $.each(data.hospitals, function (_, val) {
+                                    $("#editForm #clinicSelect").append($("<option />").val(val.id).text(val.name));
+                                });
+                            }
+                        })
+                    }
+                });
+
+            });
+        });
+    </script>
+
+
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

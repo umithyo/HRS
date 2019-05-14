@@ -18,6 +18,9 @@ namespace HRS.Helpers
         ManagerStatus CreateClinic(Clinic clinic);
         ManagerStatus UpdateClinic(int id, Clinic clinic);
         ManagerStatus RemoveClinic(int id);
+        ManagerStatus CreatePolyclinic(Polyclinic clinic);
+        ManagerStatus UpdatePolyclinic(int id, Polyclinic clinic);
+        ManagerStatus RemovePolyclinic(int id);
     }
 
     public class HospitalManager:IHospitalManager
@@ -106,7 +109,7 @@ namespace HRS.Helpers
         public ManagerStatus CreateClinic(Clinic clinic)
         {
             if (context.Clinics.Any(x => x.Name == clinic.Name))
-                return ManagerStatus.NOT_FOUND;
+                return ManagerStatus.EXISTS;
             clinic.CreatedAt = DateTime.Now;
             context.Add(clinic);
             context.SaveChanges();
@@ -130,6 +133,38 @@ namespace HRS.Helpers
                 return ManagerStatus.NOT_FOUND;
             context.Remove(clinic);
             context.SaveChanges(); 
+            return ManagerStatus.OK;
+        }
+
+        public ManagerStatus CreatePolyclinic(Polyclinic polyclinic)
+        {
+            if (context.Polyclinics.Any(x => x.Name == polyclinic.Name))
+                return ManagerStatus.EXISTS;
+            polyclinic.CreatedAt = DateTime.Now;
+            context.Add(polyclinic);
+            context.SaveChanges();
+            return ManagerStatus.OK;
+        }
+
+        public ManagerStatus UpdatePolyclinic(int id, Polyclinic _polyclinic)
+        {
+            var polyclinic = context.Polyclinics.FirstOrDefault(x => x.Id == id);
+            if (polyclinic == null)
+                return ManagerStatus.NOT_FOUND;
+            polyclinic.Name = _polyclinic.Name;
+            polyclinic.Clinic = context.Clinics.Find(_polyclinic.ClinicId);
+            polyclinic.Hospital = context.Hospitals.Find(_polyclinic.HospitalId);
+            context.SaveChanges();
+            return ManagerStatus.OK;
+        }
+
+        public ManagerStatus RemovePolyclinic(int id)
+        {
+            var polyclinic = context.Polyclinics.FirstOrDefault(x => x.Id == id);
+            if (polyclinic == null)
+                return ManagerStatus.NOT_FOUND;
+            context.Remove(polyclinic);
+            context.SaveChanges();
             return ManagerStatus.OK;
         }
     }

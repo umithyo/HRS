@@ -264,6 +264,62 @@ namespace HRS.Controllers
             return BadRequest(error);
         }
         #endregion
+        #region Polyclinics
+        [HttpGet("GetPolyclinics")]
+        public IActionResult GetPolyclinics()
+        {
+            return Ok(context.Polyclinics.Include(x=>x.Hospital).Include(x=>x.Clinic).ToList());
+        }
+
+        [HttpGet("GetPolyclinic/{id}")]
+        public IActionResult GetPolyclinic(int id)
+        {
+            var polyclinic = context.Polyclinics
+                .Include(x=>x.Clinic)
+                .Include(x=>x.Hospital)
+                .FirstOrDefault(x => x.Id == id);
+
+            if (polyclinic == null)
+                return NotFound();
+            return Ok(polyclinic);
+        }
+
+        [HttpPost("CreatePolyclinic")]
+        public IActionResult CreatePolyclinic([FromForm] Polyclinic polyclinic)
+        {
+            var status = hospitalManager.CreatePolyclinic(polyclinic);
+            if (status == ManagerStatus.OK)
+                return Ok();
+            else
+                return BadRequest(GetErrorString(status));
+        }
+
+        [HttpPut("UpdatePolyclinic/{id}")]
+        public IActionResult UpdatePolyclinic(int id, [FromForm] Polyclinic polyclinic)
+        {
+            var status = hospitalManager.UpdatePolyclinic(id, polyclinic);
+            if (status == ManagerStatus.OK)
+                return Ok();
+            else
+                return BadRequest(GetErrorString(status));
+        }
+
+        [HttpDelete("DeletePolyclinic")]
+        public IActionResult DeletePolyclinic([FromBody] JObject polyclinics)
+        {
+            var error = "";
+            foreach (var item in polyclinics["polyclinics"])
+            {
+                var status = hospitalManager.RemovePolyclinic(Convert.ToInt32(item["id"]));
+                if (status != ManagerStatus.OK)
+                    error = GetErrorString(status);
+            }
+
+            if (string.IsNullOrEmpty(error))
+                return Ok();
+            return BadRequest(error);
+        }
+        #endregion
         #endregion CRUD
     }
 }

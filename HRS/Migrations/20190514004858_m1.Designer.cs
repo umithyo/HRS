@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRS.Migrations
 {
     [DbContext(typeof(ManagerContext))]
-    [Migration("20190510204900_m2")]
-    partial class m2
+    [Migration("20190514004858_m1")]
+    partial class m1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -125,12 +125,12 @@ namespace HRS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("ClinicId");
+                    b.Property<int?>("ClinicId");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TIMESTAMP");
 
-                    b.Property<int>("HospitalId");
+                    b.Property<int?>("HospitalId");
 
                     b.Property<string>("Name")
                         .IsRequired();
@@ -276,13 +276,11 @@ namespace HRS.Migrations
                 {
                     b.HasOne("HRS.Models.Clinic", "Clinic")
                         .WithMany()
-                        .HasForeignKey("ClinicId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ClinicId");
 
                     b.HasOne("HRS.Models.Hospital", "Hospital")
                         .WithMany()
-                        .HasForeignKey("HospitalId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("HospitalId");
                 });
 
             modelBuilder.Entity("HRS.Models.Town", b =>

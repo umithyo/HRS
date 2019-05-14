@@ -51,6 +51,8 @@ namespace HRS.Controllers
 
         public IActionResult Polyclinics()
         {
+            ViewBag.Clinics = context.Clinics.ToList();
+            ViewBag.Hospitals = context.Hospitals.ToList();
             return View();
         }
 
