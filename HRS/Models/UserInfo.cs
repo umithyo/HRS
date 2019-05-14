@@ -29,6 +29,9 @@ namespace HRS.Models
         public virtual Clinic Clinic { get; set; }
         public virtual Hospital Hospital { get; set; }
 
+        public int? ClinicId { get; set; }
+        public int? HospitalId { get; set; }
+
         [Column(TypeName = "TIMESTAMP")]
         public DateTime CreatedAt { get; set; }
     }

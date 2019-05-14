@@ -162,64 +162,62 @@
                 regDependentSelect(this.dependee, this.dependant, this.url, this.firstdependee, this.firstdependant);
             });
 
-            $(document).ready(function () {
-                $('#clinicSelect').on("change", function () {
-                    $.ajax({
-                        url: "/api/GetClinic/" + this.value,
-                        success: function (data) {
-                            var selectedVal = $('#hospitalSelect').value;
-                            $('#hospitalSelect').empty();
-                            $.each(data.hospitals, function (_, val) {
-                                $("#hospitalSelect").append($("<option />").val(val.id).text(val.name));
-                                if (selectedVal === val.id) {
-                                    $("#hospitalSelect option[value='" + val.id + "']").attr("selected", "selected");
-                                }
-                            });
+            $('#clinicSelect').on("change", function () {
+                $.ajax({
+                    url: "/api/GetClinic/" + this.value,
+                    success: function (data) {
+                        var selectedVal = $('#hospitalSelect').value;
+                        $('#hospitalSelect').empty();
+                        $.each(data.hospitals, function (_, val) {
+                            $("#hospitalSelect").append($("<option />").val(val.id).text(val.name));
+                            if (selectedVal === val.id) {
+                                $("#hospitalSelect option[value='" + val.id + "']").attr("selected", "selected");
+                            }
+                        });
 
-                        },
-                        error: function () {
-                            $.ajax({
-                                url: "/api/GetClinics",
-                                success: function (data) {
-                                    $('#hospitalSelect').empty();
-                                    $.each(data.hospitals, function (_, val) {
-                                        $("#hospitalSelect").append($("<option />").val(val.id).text(val.name));
-                                    });
-                                }
-                            })
-                        }
-                    });
-
+                    },
+                    error: function () {
+                        $.ajax({
+                            url: "/api/GetClinics",
+                            success: function (data) {
+                                $('#hospitalSelect').empty();
+                                $.each(data.hospitals, function (_, val) {
+                                    $("#hospitalSelect").append($("<option />").val(val.id).text(val.name));
+                                });
+                            }
+                        })
+                    }
                 });
 
-                $('#hospitalSelect').on("change", function () {
-                    $.ajax({
-                        url: "/api/GetHospital/" + this.value,
-                        success: function (data) {
-                            var selectedVal = $('#clinicSelect').value;
-                            $('#clinicSelect').empty();
-                            $.each(data.clinics, function (_, val) {
-                                $("#clinicSelect").append($("<option />").val(val.id).text(val.name));
-                                if (selectedVal === val.id) {
-                                    $("#clinicSelect option[value='" + val.id + "']").attr("selected", "selected");
-                                }
-                            });
+            });
 
-                        },
-                        error: function () {
-                            $.ajax({
-                                url: "/api/GetHospitals",
-                                success: function (data) {
-                                    $('#clinicSelect').empty();
-                                    $.each(data.hospitals, function (_, val) {
-                                        $("#clinicSelect").append($("<option />").val(val.id).text(val.name));
-                                    });
-                                }
-                            })
-                        }
-                    });
+            $('#hospitalSelect').on("change", function () {
+                $.ajax({
+                    url: "/api/GetHospital/" + this.value,
+                    success: function (data) {
+                        var selectedVal = $('#clinicSelect').value;
+                        $('#clinicSelect').empty();
+                        $.each(data.clinics, function (_, val) {
+                            $("#clinicSelect").append($("<option />").val(val.id).text(val.name));
+                            if (selectedVal === val.id) {
+                                $("#clinicSelect option[value='" + val.id + "']").attr("selected", "selected");
+                            }
+                        });
 
+                    },
+                    error: function () {
+                        $.ajax({
+                            url: "/api/GetHospitals",
+                            success: function (data) {
+                                $('#clinicSelect').empty();
+                                $.each(data.hospitals, function (_, val) {
+                                    $("#clinicSelect").append($("<option />").val(val.id).text(val.name));
+                                });
+                            }
+                        })
+                    }
                 });
+
             });
         });
     </script>

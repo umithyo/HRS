@@ -91,7 +91,7 @@
                         </div>
                         <div class="ifDoctor">
                             <div class="form-group">
-                                <select id="clinicSelect" class="form-control" asp-for="UserInfo.Clinic">
+                                <select id="clinicSelect" class="form-control" asp-for="UserInfo.ClinicId">
                                     <option>Klinik</option>
                                     @foreach (var item in clinics)
                                     {
@@ -100,7 +100,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <select id="hospitalSelect" class="form-control" asp-for="UserInfo.Hospital">
+                                <select id="hospitalSelect" class="form-control" asp-for="UserInfo.HospitalId">
                                     <option>Hastane</option>
                                     @foreach (var item in hospitals)
                                     {
@@ -170,7 +170,7 @@
                         </div>
                         <div class="ifDoctor">
                             <div class="form-group">
-                                <select id="clinicSelect" class="form-control" asp-for="UserInfo.Clinic">
+                                <select id="clinicSelect" class="form-control" asp-for="UserInfo.ClinicId">
                                     <option>Klinik</option>
                                     @foreach (var item in clinics)
                                     {
@@ -179,7 +179,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <select id="hospitalSelect" class="form-control" asp-for="UserInfo.Hospital">
+                                <select id="hospitalSelect" class="form-control" asp-for="UserInfo.HospitalId">
                                     <option>Hastane</option>
                                     @foreach (var item in hospitals)
                                     {
@@ -423,22 +423,142 @@
             });
         });
 
-    $('.ifDoctor').hide();
-    $('#Role').on("change", function () {
-        if (this.value === "Doktor") {
-            $('.ifDoctor').show();
-        } else {
-            $('.ifDoctor').hide();
-        }
-    });
+        $('.ifDoctor').hide();
+        $('#Role').on("change", function () {
+            if (this.value === "Doktor") {
+                $('.ifDoctor').show();
+            } else {
+                $('.ifDoctor').hide();
+            }
+        });
 
-    $('#editForm #Role').on("change", function () {
-        if (this.value === "Doktor") {
-            $('.ifDoctor').show();
-        } else {
-            $('.ifDoctor').hide();
-        }
-    });
+        $('#editForm #Role').on("change", function () {
+            if (this.value === "Doktor") {
+                $('.ifDoctor').show();
+            } else {
+                $('.ifDoctor').hide();
+            }
+        });
+
+        $(document).ready(function () {
+            $('#clinicSelect').on("change", function () {
+                var selectedVal = $('#hospitalSelect').find(":selected").val();
+                console.log(selectedVal)
+                $.ajax({
+                    url: "/api/GetClinic/" + this.value,
+                    success: function (data) {
+                        $('#hospitalSelect').empty();
+                        $.each(data.hospitals, function (_, val) {
+                            $("#hospitalSelect").append($("<option />").val(val.id).text(val.name));
+                            if (selectedVal === val.id.toString()) {
+                                $("#hospitalSelect option[value='" + val.id + "']").attr("selected", "selected");
+                            }
+                        });
+
+                    },
+                    error: function () {
+                        $.ajax({
+                            url: "/api/GetClinics",
+                            success: function (data) {
+                                $('#hospitalSelect').empty();
+                                $.each(data.hospitals, function (_, val) {
+                                    $("#hospitalSelect").append($("<option />").val(val.id).text(val.name));
+                                });
+                            }
+                        })
+                    }
+                });
+
+            });
+
+            $('#hospitalSelect').on("change", function () {
+                var selectedVal = $('#clinicSelect').find(":selected").val();
+                console.log(selectedVal)
+                $.ajax({
+                    url: "/api/GetHospital/" + this.value,
+                    success: function (data) {
+                        $('#clinicSelect').empty();
+                        $.each(data.clinics, function (_, val) {
+                            $("#clinicSelect").append($("<option />").val(val.id).text(val.name));
+                            if (selectedVal === val.id.toString()) {
+                                $("#clinicSelect option[value='" + val.id + "']").attr("selected", "selected");
+                            }
+                        });
+
+                    },
+                    error: function () {
+                        $.ajax({
+                            url: "/api/GetHospitals",
+                            success: function (data) {
+                                $('#clinicSelect').empty();
+                                $.each(data.hospitals, function (_, val) {
+                                    $("#clinicSelect").append($("<option />").val(val.id).text(val.name));
+                                });
+                            }
+                        })
+                    }
+                });
+
+            });
+
+            $('#editForm #clinicSelect').on("change", function () {
+                var selectedVal = $('#editForm #hospitalSelect').find(":selected").val();
+                $.ajax({
+                    url: "/api/GetClinic/" + this.value,
+                    success: function (data) {
+                        $('#editForm #hospitalSelect').empty();
+                        $.each(data.hospitals, function (_, val) {
+                            $("#editForm #hospitalSelect").append($("<option />").val(val.id).text(val.name));
+                            if (selectedVal === val.id.toString()) {
+                                $("#editForm #hospitalSelect option[value='" + val.id + "']").attr("selected", "selected");
+                            }
+                        });
+
+                    },
+                    error: function () {
+                        $.ajax({
+                            url: "/api/GetClinics",
+                            success: function (data) {
+                                $('#editForm #hospitalSelect').empty();
+                                $.each(data.hospitals, function (_, val) {
+                                    $("#editForm #hospitalSelect").append($("<option />").val(val.id).text(val.name));
+                                });
+                            }
+                        })
+                    }
+                });
+
+            });
+
+            $('#editForm #hospitalSelect').on("change", function () {
+                var selectedVal = $('#editForm #clinicSelect').find(":selected").val();
+                $.ajax({
+                    url: "/api/GetHospital/" + this.value,
+                    success: function (data) {
+                        $('#editForm #clinicSelect').empty();
+                        $.each(data.clinics, function (_, val) {
+                            $("#editForm #clinicSelect").append($("<option />").val(val.id).text(val.name));
+                            if (selectedVal === val.id.toString()) {
+                                $("#editForm #clinicSelect option[value='" + val.id + "']").attr("selected", "selected");
+                            }
+                        });
+
+                    },
+                    error: function () {
+                        $.ajax({
+                            url: "/api/GetHospitals",
+                            success: function (data) {
+                                $('#editForm #clinicSelect').empty();
+                                $.each(data.hospitals, function (_, val) {
+                                    $("#editForm #clinicSelect").append($("<option />").val(val.id).text(val.name));
+                                });
+                            }
+                        })
+                    }
+                });
+
+            });
+        });
     </script>
 
 
