@@ -3,27 +3,94 @@
     ViewData["Title"] = "Anasayfa";
     ViewData["Description"] = "Kontrol paneli";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-
-    var pages = Constants.ManagementPages;
+    var counts = ViewBag.Counts as Dictionary<string, int>;
 }
 
 <!-- Small boxes (Stat box) -->
 <div class="row">
-    @foreach (var item in pages)
-    {
-        <div class="col-lg-3 col-xs-6">
-            <!-- small box -->
-            <div class="small-box @item.BackgroundClass">
-                <div class="inner">
-                    <h3>@item.Header</h3>
+    <div class="col-lg-3 col-xs-6">
+        <!-- small box -->
+        <div class="small-box bg-aqua">
+            <div class="inner">
+                <h3>Hastaneler</h3>
 
-                    <p>@item.Description</p>
-                </div>
-                <div class="icon">
-                    <i class="@item.Icon"></i>
-                </div>
-                <a asp-action="@item.Action" class="small-box-footer">Sayfaya Git<i class="fa fa-angle-double-right"></i></a>
+                <p>Hastaneleri düzenle (@counts["Hospitals"])</p>
             </div>
+            <div class="icon">
+                <i class="fa fa-h-square"></i>
+            </div>
+            <a asp-action="Hospitals" class="small-box-footer">Sayfaya Git<i class="fa fa-angle-double-right"></i></a>
         </div>
-    }       
+    </div>      
+    <div class="col-lg-3 col-xs-6">
+        <!-- small box -->
+        <div class="small-box bg-green">
+            <div class="inner">
+                <h3>Kullanıcılar</h3>
+
+                <p>Kullanıcıları düzenle (@counts["Users"])</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-user-md"></i>
+            </div>
+            <a asp-action="Users" class="small-box-footer">Sayfaya Git<i class="fa fa-angle-double-right"></i></a>
+        </div>
+    </div>      
+    
+    <div class="col-lg-3 col-xs-6">
+        <!-- small box -->
+        <div class="small-box bg-yellow">
+            <div class="inner">
+                <h3>Klinikler</h3>
+
+                <p>Klinikleri düzenle (@counts["Clinics"])</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-hospital-o"></i>
+            </div>
+            <a asp-action="Clinics" class="small-box-footer">Sayfaya Git<i class="fa fa-angle-double-right"></i></a>
+        </div>
+    </div>   
+    <div class="col-lg-3 col-xs-6">
+        <!-- small box -->
+        <div class="small-box bg-orange">
+            <div class="inner">
+                <h3>Poliklinikler</h3>
+
+                <p>Poliklinikleri düzenle (@counts["Polyclinics"])</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-stethoscope"></i>
+            </div>
+            <a asp-action="Polyclinics" class="small-box-footer">Sayfaya Git<i class="fa fa-angle-double-right"></i></a>
+        </div>
+    </div> 
+    <div class="col-lg-3 col-xs-6">
+        <!-- small box -->
+        <div class="small-box bg-light-blue">
+            <div class="inner">
+                <h3>İller</h3>
+
+                <p>İlleri düzenle (@counts["Cities"])</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-map-o"></i>
+            </div>
+            <a asp-action="Cities" class="small-box-footer">Sayfaya Git<i class="fa fa-angle-double-right"></i></a>
+        </div>
+    </div> 
+    <div class="col-lg-3 col-xs-6">
+        <!-- small box -->
+        <div class="small-box bg-lime">
+            <div class="inner">
+                <h3>İlçeler</h3>
+
+                <p>İlçeleri düzenle (@counts["Towns"])</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-map-marker"></i>
+            </div>
+            <a asp-action="Towns" class="small-box-footer">Sayfaya Git<i class="fa fa-angle-double-right"></i></a>
+        </div>
+    </div> 
 </div>

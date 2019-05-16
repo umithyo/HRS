@@ -12,7 +12,7 @@ using static HRS.Helpers.Utils;
 
 namespace HRS.Controllers
 {
-    [PermissionAuthorize(Permissions = RoleConfig.Admin+","+RoleConfig.Operator+","+RoleConfig.Founder, UnauthorizedRedirectUri = "/Home/Index")]
+    [PermissionAuthorize(Permissions = RoleConfig.Admin+","+RoleConfig.Operator, UnauthorizedRedirectUri = "/Home/Index")]
     public class ManagementController : Controller
     {
         private readonly ManagerContext context;
@@ -27,6 +27,15 @@ namespace HRS.Controllers
 
         public IActionResult Index()
         {
+            ViewBag.Counts = new Dictionary<string, int>
+            {
+                { "Hospitals", context.Hospitals.Count() },
+                { "Users", context.Users.Count() },
+                { "Polyclinics", context.Polyclinics.Count() },
+                { "Clinics", context.Clinics.Count() },
+                { "Cities", context.Cities.Count() },
+                { "Towns", context.Towns.Count() },
+            };
             return View();
         }
 
