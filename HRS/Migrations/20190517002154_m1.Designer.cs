@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRS.Migrations
 {
     [DbContext(typeof(ManagerContext))]
-    [Migration("20190514004858_m1")]
+    [Migration("20190517002154_m1")]
     partial class m1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -198,6 +198,8 @@ namespace HRS.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired();
+
+                    b.Property<string>("Gender");
 
                     b.Property<int?>("HospitalId");
 

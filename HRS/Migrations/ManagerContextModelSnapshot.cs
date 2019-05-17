@@ -197,6 +197,8 @@ namespace HRS.Migrations
                     b.Property<string>("Email")
                         .IsRequired();
 
+                    b.Property<string>("Gender");
+
                     b.Property<int?>("HospitalId");
 
                     b.Property<string>("Name")
