@@ -19,12 +19,14 @@ namespace HRS
         private readonly ManagerContext context;
         private readonly IUserManager userManager;
         private readonly ISessionManager sessionManager;
-       
-        public HomeController(ManagerContext _context, IUserManager _userManager, ISessionManager _sessionManager)
+        private readonly IAppointmentManager appointmentManager;
+
+        public HomeController(ManagerContext _context, IUserManager _userManager, ISessionManager _sessionManager, IAppointmentManager appointmentManager)
         {
             context = _context;
             userManager = _userManager;
             sessionManager = _sessionManager;
+            this.appointmentManager = appointmentManager;
         }
 
         [PermissionAuthorize]
@@ -35,6 +37,17 @@ namespace HRS
             ViewBag.Clinics = context.Clinics.ToList();
             ViewBag.Hospitals = context.Hospitals.ToList();
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult Index(FilterVM filter)
+        {
+            ViewBag.Cities = context.Cities.ToList();
+            ViewBag.Clinics = context.Clinics.ToList();
+            ViewBag.Hospitals = context.Hospitals.ToList();
+            var result = appointmentManager.GetAvailableDoctors(filter);
+            ViewBag.Result = result;
+            return View(filter);
         }
 
         public IActionResult Login()
