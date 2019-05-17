@@ -1,4 +1,6 @@
-﻿@{
+﻿@model FilterVM
+
+@{
     var role = sessionManager.GetRole();
     var user = sessionManager.GetUser();
     var userinfo = userManager.GetUserInfo(user);
@@ -25,9 +27,9 @@
          data-aos-duration="3000">
 
         <h5>HASTANE RANDEVU ARAMA</h5>
-        <form>
+        <form method="post">
             <div class="input-group mb-3 il">
-                <select class="custom-select" id="citySelect">
+                <select class="custom-select" id="citySelect" asp-for="CityId">
                     <option selected>İl</option>
                     @foreach (var item in cities)
                     {
@@ -36,12 +38,12 @@
                 </select>
             </div>
             <div class="input-group mb-3 il">
-                <select class="custom-select" id="townSelect">
+                <select class="custom-select" id="townSelect" asp-for="TownId">
                     <option selected>İlçe</option>
                 </select>
             </div>
             <div class="input-group mb-3 il">
-                <select class="custom-select" id="clinicSelect">
+                <select class="custom-select" id="clinicSelect" asp-for="ClinicId">
                     <option selected>Klinik</option>
                     @foreach (var item in clinics)
                     {
@@ -50,7 +52,7 @@
                 </select>
             </div>
             <div class="input-group mb-3 il">
-                <select class="custom-select" id="hospitalSelect">
+                <select class="custom-select" id="hospitalSelect" asp-for="HospitalId">
                     <option selected>Hastane</option>
                     @foreach (var item in hospitals)
                     {
@@ -59,7 +61,7 @@
                 </select>
             </div>
             <div class="buttons">
-                <button type="reset" class="reset-but hvr-round-corners">TEMİZLE</button>
+                <button type="button" class="reset-but hvr-round-corners" onclick="window.location = '@Url.Action("Index")'">TEMİZLE</button>
                 <button type="submit" class="search hvr-round-corners">RANDEVU ARA</button>
             </div>
         </form>
@@ -76,72 +78,45 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="female">
-                        <th class="icon col-md-offset">
-                            <i class="fa fa-user-md" aria-hidden="true"></i>
-                        </th>
-                        <td class="doctor">
-                            <span>Dilan Ece Çelik</span>
-                        </td>
-                        <td class="hospital">
-                            Gülhane Araştırma Hastanesi
-                        </td>
-                        <td class="place">
-                            Göz Hastalıkları Polikinliği-1
-                        </td>
-                        <td class="tarih">
-                            <span>En Erken :20.10.2019</span>
-                        </td>
-                        <a href="#">
-                            <td class="icon-arrow">
-                                <i class="fa fa-angle-double-right" aria-hidden="true"></i>
-                            </td>
-                        </a>
-                    </tr>
-                    <tr class="male">
-                        <th class="icon col-md-offset">
-                            <i class="fa fa-user-md" aria-hidden="true"></i>
-                        </th>
-                        <td class="doctor">
-                            <span>Furkan Ege Çelik</span>
-                        </td>
-                        <td class="hospital">
-                            Gülhane Araştırma Hastanesi
-                        </td>
-                        <td class="place">
-                            Göz Hastalıkları Polikinliği-1
-                        </td>
-                        <td class="tarih">
-                            <span>En Erken :10.70.2019</span>
-                        </td>
-                        <a href="#">
-                            <td class="icon-arrow">
-                                <i class="fa fa-angle-double-right" aria-hidden="true"></i>
-                            </td>
-                        </a>
-                    </tr>
-                    <tr class="female">
-                        <th class="icon col-md-offset">
-                            <i class="fa fa-user-md" aria-hidden="true"></i>
-                        </th>
-                        <td class="doctor">
-                            <span>Dilan Ece Çelik</span>
-                        </td>
-                        <td class="hospital">
-                            Gülhane Araştırma Hastanesi
-                        </td>
-                        <td class="place">
-                            Göz Hastalıkları Polikinliği-1
-                        </td>
-                        <td class="tarih">
-                            <span>En Erken :20.10.2019</span>
-                        </td>
-                        <a href="#">
-                            <td class="icon-arrow">
-                                <i class="fa fa-angle-double-right" aria-hidden="true"></i>
-                            </td>
-                        </a>
-                    </tr>
+                    @if (ViewBag.Result != null)
+                    {
+                        @foreach (var item in ViewBag.Result as IEnumerable<User>)
+                        {
+                            <tr class="@(item.UserInfo.Gender == "Erkek" ? "Male" : "Female" )">
+                                <th class="icon col-md-offset">
+                                    <i class="fa fa-user-md" aria-hidden="true"></i>
+                                </th>
+                                <td class="doctor">
+                                    <span>@item.UserInfo.Name @item.UserInfo.Surname</span>
+                                </td>
+                                <td class="hospital">
+                                    @item.UserInfo.Hospital.Name
+                                </td>
+                                <td class="place">
+                                    @if (hospitalManager.GetPolyclinic(item.UserInfo.Hospital, item.UserInfo.Clinic) != null)
+                                    {
+                                        @hospitalManager.GetPolyclinic(item.UserInfo.Hospital, item.UserInfo.Clinic).Name
+                                    }
+                                    else
+                                    {
+                                        @item.UserInfo.Clinic.Name
+                                    }
+                                </td>
+                                <td class="tarih">
+                                    <span>En Erken :20.10.2019</span> <!--inject appointment manager, get earliest appointment time-->
+                                </td>
+                                <a href="#">
+                                    <td class="icon-arrow">
+                                        <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+                                    </td>
+                                </a>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        //add something here
+                    }
                 <tbody>
             </table>
         </div>
@@ -167,7 +142,7 @@
                     url: "/api/GetClinic/" + this.value,
                     success: function (data) {
                         var selectedVal = $('#hospitalSelect').value;
-                        $('#hospitalSelect').empty();
+                        $('#hospitalSelect').html("<option>Hastane</option>");
                         $.each(data.hospitals, function (_, val) {
                             $("#hospitalSelect").append($("<option />").val(val.id).text(val.name));
                             if (selectedVal === val.id) {
@@ -180,7 +155,7 @@
                         $.ajax({
                             url: "/api/GetClinics",
                             success: function (data) {
-                                $('#hospitalSelect').empty();
+                                $('#hospitalSelect').html("<option>Hastane</option>")
                                 $.each(data.hospitals, function (_, val) {
                                     $("#hospitalSelect").append($("<option />").val(val.id).text(val.name));
                                 });
@@ -196,7 +171,7 @@
                     url: "/api/GetHospital/" + this.value,
                     success: function (data) {
                         var selectedVal = $('#clinicSelect').value;
-                        $('#clinicSelect').empty();
+                        $('#clinicSelect').html("<option>Klinik</option>")
                         $.each(data.clinics, function (_, val) {
                             $("#clinicSelect").append($("<option />").val(val.id).text(val.name));
                             if (selectedVal === val.id) {
@@ -209,7 +184,7 @@
                         $.ajax({
                             url: "/api/GetHospitals",
                             success: function (data) {
-                                $('#clinicSelect').empty();
+                                $('#clinicSelect').html("<option>Klinik</option>")
                                 $.each(data.hospitals, function (_, val) {
                                     $("#clinicSelect").append($("<option />").val(val.id).text(val.name));
                                 });

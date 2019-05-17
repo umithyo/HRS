@@ -51,9 +51,10 @@ namespace HRS
             services.AddSingleton(_appSettings);
             ManagerContext.ConnectionStrings = _appSettings.GetSection("ConnectionStrings").Get<Dictionary<string, string>>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<IUserManager, UserManager>();
-            services.AddTransient<IHospitalManager, HospitalManager>();
-            services.AddTransient<ISessionManager, SessionManager>();
+            services.AddScoped<IUserManager, UserManager>();
+            services.AddScoped<IHospitalManager, HospitalManager>();
+            services.AddScoped<ISessionManager, SessionManager>();
+            services.AddScoped<IAppointmentManager, AppointmentManager>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
 
