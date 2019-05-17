@@ -19,6 +19,13 @@
                 <span asp-validation-for="UserInfo.Surname" class="text-danger"></span>
             </div>
             <div class="form-group col-md-8" data-aos="fade-down">
+                <select class="form-control" asp-for="UserInfo.Gender">
+                    <option>Erkek</option>
+                    <option>Kadın</option>
+                </select>
+                <span asp-validation-for="UserInfo.Gender" class="text-danger"></span>
+            </div>
+            <div class="form-group col-md-8" data-aos="fade-down">
                 <input class="form-control" asp-for="User.TCKimlikNo">
                 <span asp-validation-for="User.TCKimlikNo" class="text-danger"></span>
             </div>

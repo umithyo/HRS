@@ -26,6 +26,9 @@ namespace HRS.Models
         public string Role { get; set; } = RoleConfig.User;
         public virtual UserInfo UserInfo { get; set; }
 
+        [NotMapped]
+        public List<Appointment> Appointments { get; set; }
+
         [Column(TypeName ="TIMESTAMP")]
         public DateTime CreatedAt { get; set; }
     }

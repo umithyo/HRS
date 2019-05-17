@@ -25,6 +25,8 @@ namespace HRS.Models
         [DataType(DataType.PhoneNumber, ErrorMessage = "Lütfen geçerli bir telefon numarası girin.")]
         [Display(Name = "Telefon", Prompt = "Telefon numarası")]
         public string Phone { get; set; }
+        [Display(Name="Cinsiyet")]
+        public string Gender { get; set; }
         //If doctor;
         public virtual Clinic Clinic { get; set; }
         public virtual Hospital Hospital { get; set; }
