@@ -21,6 +21,7 @@ namespace HRS.Helpers
         ManagerStatus CreatePolyclinic(Polyclinic clinic);
         ManagerStatus UpdatePolyclinic(int id, Polyclinic clinic);
         ManagerStatus RemovePolyclinic(int id);
+        Polyclinic GetPolyclinic(Hospital hospital, Clinic clinic);
     }
 
     public class HospitalManager:IHospitalManager
@@ -166,6 +167,11 @@ namespace HRS.Helpers
             context.Remove(polyclinic);
             context.SaveChanges();
             return ManagerStatus.OK;
+        }
+
+        public Polyclinic GetPolyclinic(Hospital hospital, Clinic clinic)
+        {
+            return context.Polyclinics.Where(x => x.ClinicId == clinic.Id && x.HospitalId ==  hospital.Id).FirstOrDefault();
         }
     }
 }
