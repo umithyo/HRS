@@ -55,7 +55,7 @@ namespace HRS.Helpers
         {
             return context.Users.FirstOrDefault(x => x.TCKimlikNo == tc);
         }
-
+       
         public bool UserExists(Guid id)
         {
             return context.Users.Any(x => x.Id == id);
