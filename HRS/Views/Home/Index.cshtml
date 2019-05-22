@@ -22,6 +22,17 @@
 
     </div>
 </div>
+<div class="row pull-right" id="dateArea">
+    <form>
+        <div class="form-group">
+            <input id="datetimepicker" type="text"/>
+        </div>
+        <div class="form-group">
+            <input type="submit" class="form-control  btn-outline-primary" value="Randevu Oluştur" />
+        </div>
+        
+    </form>
+</div>
 <div class="container">
     <div class="dropdown" data-aos="fade-up"
          data-aos-duration="3000">
@@ -66,20 +77,21 @@
             </div>
         </form>
         <div class="data">
-            <table class="table col-md-12">
-                <thead>
-                    <tr>
-                        <th scope="col"></th>
-                        <th scope="col">Hekim</th>
-                        <th scope="col">Kurum Adı</th>
-                        <th scope="col">Muayene Yeri</th>
-                        <th scope="col">Tarih</th>
-                        <th scope="col"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (ViewBag.Result != null)
-                    {
+            @if (ViewBag.Result != null)
+            {
+                <table class="table col-md-12">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">Hekim</th>
+                            <th scope="col">Kurum Adı</th>
+                            <th scope="col">Muayene Yeri</th>
+                            <th scope="col">Tarih</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
                         @foreach (var item in ViewBag.Result as IEnumerable<User>)
                         {
                             <tr class="@(item.UserInfo.Gender == "Erkek" ? "Male" : "Female" )">
@@ -103,28 +115,43 @@
                                     }
                                 </td>
                                 <td class="tarih">
-                                    <span>En Erken :20.10.2019</span> <!--inject appointment manager, get earliest appointment time-->
+                                    @if (appointmentManager.GetDoctorLatestAppointment(item) == null)
+                                    {
+                                        <span>En Erken @DateTime.Now.Add(TimeSpan.FromDays(1)).ToShortDateString()</span> <!--eğer bir randevusu yoksa en erken tarih olarak yarını seç-->
+                                    }
+                                    else
+                                    {
+                                        <span>En Erken @appointmentManager.GetDoctorLatestAppointment(item).Time.ToShortDateString()</span>
+                                    }
                                 </td>
-                                <a href="#">
-                                    <td class="icon-arrow">
+
+                                <td class="icon-arrow">
+                                    <a href="#" onclick="GetAppointments('@item.Id')">
                                         <i class="fa fa-angle-double-right" aria-hidden="true"></i>
-                                    </td>
-                                </a>
+                                    </a>
+                                </td>
+
                             </tr>
                         }
-                    }
-                    else
-                    {
-                        //add something here
-                    }
-                <tbody>
-            </table>
+
+                    <tbody>
+                </table>
+            }
+            else
+            {
+                //add something here
+            }
         </div>
 
     </div>
 </div>
 
+@section Styles {
+    <link href="~/css/jquery.datetimepicker.min.css"  rel="stylesheet"/>
+}
+
 @section Scripts{
+    <script src="~/js/jquery.datetimepicker.full.min.js"></script>
     <script>
         $(document).ready(function () {
             let dep = [
@@ -138,14 +165,15 @@
             });
 
             $('#clinicSelect').on("change", function () {
+                var selectedVal = $('#hospitalSelect').find(":selected").val();
                 $.ajax({
                     url: "/api/GetClinic/" + this.value,
                     success: function (data) {
-                        var selectedVal = $('#hospitalSelect').value;
+                        
                         $('#hospitalSelect').html("<option>Hastane</option>");
                         $.each(data.hospitals, function (_, val) {
                             $("#hospitalSelect").append($("<option />").val(val.id).text(val.name));
-                            if (selectedVal === val.id) {
+                            if (selectedVal === val.id.toString()) {
                                 $("#hospitalSelect option[value='" + val.id + "']").attr("selected", "selected");
                             }
                         });
@@ -153,10 +181,10 @@
                     },
                     error: function () {
                         $.ajax({
-                            url: "/api/GetClinics",
+                            url: "/api/GetHospitals",
                             success: function (data) {
                                 $('#hospitalSelect').html("<option>Hastane</option>")
-                                $.each(data.hospitals, function (_, val) {
+                                $.each(data, function (_, val) {
                                     $("#hospitalSelect").append($("<option />").val(val.id).text(val.name));
                                 });
                             }
@@ -167,25 +195,29 @@
             });
 
             $('#hospitalSelect').on("change", function () {
+                var selectedVal = $('#clinicSelect').find(":selected").val();
                 $.ajax({
                     url: "/api/GetHospital/" + this.value,
                     success: function (data) {
-                        var selectedVal = $('#clinicSelect').value;
+                        
                         $('#clinicSelect').html("<option>Klinik</option>")
                         $.each(data.clinics, function (_, val) {
                             $("#clinicSelect").append($("<option />").val(val.id).text(val.name));
-                            if (selectedVal === val.id) {
+                            
+                            if (selectedVal === val.id.toString()) {
                                 $("#clinicSelect option[value='" + val.id + "']").attr("selected", "selected");
+                                console.log(val.id + " " + selectedVal)
                             }
                         });
 
                     },
                     error: function () {
+                        
                         $.ajax({
-                            url: "/api/GetHospitals",
+                            url: "/api/GetClinics",
                             success: function (data) {
                                 $('#clinicSelect').html("<option>Klinik</option>")
-                                $.each(data.hospitals, function (_, val) {
+                                $.each(data, function (_, val) {
                                     $("#clinicSelect").append($("<option />").val(val.id).text(val.name));
                                 });
                             }
@@ -194,6 +226,55 @@
                 });
 
             });
+
+            $('#datetimepicker').datetimepicker(
+                {
+                    minDate:'+1970/01/02',//yesterday is minimum date(for today use 0 or -1970/01/01)
+                    lang: 'tr',
+                    inline: true,
+                    allowTimes: ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"],
+                }
+            );
+            $('#dateArea').hide();
+            
         });
+        function GetAppointments(id) {
+            $.ajax({
+                url: "/api/GetDoctorAppointments/"+id,
+                type: "get",
+                success: function (data) {
+                    var disabledDates = [];
+                    var dates = {};
+                    $.each(data, function (_, val) {
+                        var date = moment(val.time, moment.HTML5_FMT.DATE);
+                        var time = moment(val.time, "HH");
+                        //disabledDates.append(date);
+                        if (dates[date] == null) {
+                            dates[date] = [];
+                        }
+                        dates[date].append(time);
+                    });
+                    $('#dateArea').show();
+                    $('#datetimepicker').datetimepicker('setOptions', {
+                        inline: true,
+                        //disabledDates: disabledDates,                      
+                        onChangeDateTime:function(ct,$i){
+                          var ind = moment(ct, moment.HTML5_FMT.DATE);
+                          $('.xdsoft_time_variant .xdsoft_time').show();
+                          if(ind !== -1) {
+                              $('.xdsoft_time_variant .xdsoft_time').each(function (index) {
+                                  if (dates[ind] != null) {
+                                      if (dates[ind].indexOf(parseInt($(this).text())) !== -1) {
+                                          $(this).hide();
+                                      }
+                                  }
+                              });
+                          }
+                        }
+                    });
+                }
+            });
+        }
+        
     </script>
 }
