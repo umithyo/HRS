@@ -22,12 +22,14 @@ namespace HRS.Controllers
         private readonly ManagerContext context;
         private readonly IHospitalManager hospitalManager;
         private readonly IUserManager userManager;
+        private readonly IAppointmentManager appointmentManager;
 
-        public AjaxController(ManagerContext _context, IHospitalManager _hospitalManager, IUserManager _userManager)
+        public AjaxController(ManagerContext _context, IHospitalManager _hospitalManager, IUserManager _userManager, IAppointmentManager appointmentManager)
         {
             context = _context;
             hospitalManager = _hospitalManager;
             userManager = _userManager;
+            this.appointmentManager = appointmentManager;
         }
         #region CRUD
 
@@ -321,5 +323,13 @@ namespace HRS.Controllers
         }
         #endregion
         #endregion CRUD
+
+        #region Appointments
+        [HttpGet("GetDoctorAppointments/{id}")]
+        public IActionResult GetDoctorAppointments(Guid id)
+        {
+            return Ok(appointmentManager.GetDoctorAppointments(userManager.GetUser(id)));
+        }
+        #endregion
     }
 }
