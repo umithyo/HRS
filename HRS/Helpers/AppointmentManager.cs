@@ -31,22 +31,23 @@ namespace HRS.Helpers
 
         public Appointment GetDoctorLatestAppointment(User doctor)
         {
-            return doctor.Appointments.Where(x => x.Doctor == doctor).OrderByDescending(x => x.Time).FirstOrDefault();
+            var latest = context.Appointments.Where(x=>x.Doctor.Id == doctor.Id).OrderByDescending(x => x.Time).FirstOrDefault();
+            return latest != null && latest.Time > DateTime.Now ? latest : null;
         }
 
         public Appointment GetPatientLatestAppointment(User patient)
         {
-            return patient.Appointments.Where(x => x.Patient == patient).OrderByDescending(x => x.Time).FirstOrDefault();
+            return context.Appointments.Where(x => x.Patient.Id == patient.Id).OrderByDescending(x => x.Time).FirstOrDefault();
         }
 
         public IEnumerable<Appointment> GetDoctorAppointments(User doctor)
         {
-            return doctor.Appointments.Where(x => x.Doctor == doctor).OrderByDescending(x => x.Time).ToList();
+            return context.Appointments.Where(x => x.Doctor.Id == doctor.Id).OrderByDescending(x => x.Time).ToList();
         }
 
         public IEnumerable<Appointment> GetPatientAppointments(User patient)
         {
-            return patient.Appointments.Where(x => x.Patient == patient).OrderByDescending(x => x.Time).ToList();
+            return context.Appointments.Where(x => x.Patient.Id == patient.Id).OrderByDescending(x => x.Time).ToList();
         }
 
         public IEnumerable<User> GetAvailableDoctors(FilterVM filterVM)
