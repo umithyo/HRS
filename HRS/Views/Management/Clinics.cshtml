@@ -29,7 +29,7 @@
                 <table class="table" id="table" style="overflow-y:auto; max-height:100vh;">
                     <thead>
                         <tr>
-                            @*<th></th>*@
+                            <th></th>
                             <th></th>
                             <th></th>
                             <th>Klinik Adı</th>
@@ -138,15 +138,18 @@
                 // }
             },
             "order": [2, "desc"],
-            "select": { style: "os" },
+            "select": {
+                style: "os",
+                selector: 'td:first-child'
+            },
             "columnDefs":
                 [{
-
-                    "targets": 0,
-                    //"checkboxes": true,
+                    orderable: false,
+                    className: 'select-checkbox',
+                    targets: 0
                 },
                 {
-                    "targets": [0, 1],
+                    "targets": [1, 2],
                     "visible": false,
                     "searchable": false,
                     "orderable": false
@@ -156,7 +159,7 @@
                     className: 'text-center'
                 }],
             "columns": [
-                //{ "data": null },
+                { "data": null, render: function () {  return ""}},
                 { "data": "id" },
                 { "data": "createdAt" },
                 { "data": "name" },              

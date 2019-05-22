@@ -31,7 +31,7 @@
                 <table class="table" id="table" style="overflow-y:auto; max-height:100vh;">
                     <thead>
                         <tr>
-                            @*<th></th>*@
+                            <th></th>
                             <th></th>
                             <th></th>
                             <th>TC Kimlik Numarası</th>
@@ -39,6 +39,7 @@
                             <th>Soyadı</th>
                             <th>Cinsiyeti</th>
                             <th>Rolü</th>
+                            <th></th>
                         </tr>
                     </thead>
                 </table>
@@ -258,15 +259,25 @@
                 // }
             },
             "order": [2, "desc"],
-            "select": { style: "os" },
+            "select": {
+                style: "os",
+                selector: 'td:first-child'
+            },
             "columnDefs":
                 [{
 
-                    "targets": 0,
+                    "targets": 8,
+                    "searchable": false,
+                    "orderable": false
                     //"checkboxes": true,
                 },
                 {
-                    "targets": [0, 1],
+                    orderable: false,
+                    className: 'select-checkbox',
+                    targets: 0
+                },
+                {
+                    "targets": [1, 2],
                     "visible": false,
                     "searchable": false,
                     "orderable": false
@@ -276,7 +287,7 @@
                     className: 'text-center'
                 }],
             "columns": [
-                //{ "data": null },
+                { "data": null, render: function () {  return ""}},
                 { "data": "id" },
                 { "data": "createdAt" },
                 { "data": "tcKimlikNo" },             
@@ -284,6 +295,12 @@
                 { "data": "userInfo.surname" },
                 { "data": "userInfo.gender" },
                 { "data": "role" },
+                {
+                    "data": null,
+                    render: function ( data, type, row ) {
+                        return '<a href = "@Url.Action("Appointments", "Manager")/'+data.id+'">Randevular <i class="fa fa-external-link"></i></button>';
+                    }
+                },              
             ],
         });
 
@@ -579,8 +596,6 @@
             });
         });
     </script>
-
-
 
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
