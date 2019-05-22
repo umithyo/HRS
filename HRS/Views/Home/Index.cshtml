@@ -22,16 +22,20 @@
 
     </div>
 </div>
-<div class="row pull-right" id="dateArea">
-    <form>
-        <div class="form-group">
-            <input id="datetimepicker" type="text"/>
-        </div>
-        <div class="form-group">
-            <input type="submit" class="form-control  btn-outline-primary" value="Randevu Oluştur" />
-        </div>
-        
-    </form>
+<div class="row pull-right">
+    <div id="dateLoading" class="text-center">
+        <img src="~/images/loading1.svg" alt="Loading ...">
+    </div>
+    <div id="dateArea" class="">
+        <form>
+            <div class="form-group">
+                <input id="datetimepicker" type="text" />
+            </div>
+            <div class="form-group">
+                <button id="pickAppointment" type="button" class="form-control  btn-outline-primary">Randevu Oluştur</button>
+            </div>
+        </form>
+    </div>
 </div>
 <div class="container">
     <div class="dropdown" data-aos="fade-up"
@@ -229,52 +233,105 @@
 
             $('#datetimepicker').datetimepicker(
                 {
-                    minDate:'+1970/01/02',//yesterday is minimum date(for today use 0 or -1970/01/01)
+                    minDate: '+1970/01/02',//yesterday is minimum date(for today use 0 or -1970/01/01)
+                    defaultDate: '+1970/01/02',//yesterday is minimum date(for today use 0 or -1970/01/01)
                     lang: 'tr',
                     inline: true,
-                    allowTimes: ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"],
+                    allowTimes: ["06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"],
+                    onGenerate:function( ct ){
+                        $(this).find('.xdsoft_date.xdsoft_weekend')
+                            .addClass('xdsoft_disabled');
+                    },
+                    defaultTime: '12:00',
+                    dayOfWeekStart: 1,
                 }
             );
             $('#dateArea').hide();
             
         });
         function GetAppointments(id) {
+            var l = "@hosting.WebRootPath";
+            $('#dateLoading').show();
             $.ajax({
                 url: "/api/GetDoctorAppointments/"+id,
                 type: "get",
                 success: function (data) {
                     var disabledDates = [];
                     var dates = {};
+                    console.log(data)
                     $.each(data, function (_, val) {
-                        var date = moment(val.time, moment.HTML5_FMT.DATE);
-                        var time = moment(val.time, "HH");
+                        var date = moment(val.time).format(moment.HTML5_FMT.DATE);
+                        var time = parseInt(moment(val.time).hours());
                         //disabledDates.append(date);
                         if (dates[date] == null) {
                             dates[date] = [];
+                            console.log(dates)
+                            console.log(dates[date])
+                            console.log(time)
                         }
-                        dates[date].append(time);
+                        dates[date].push(time);
                     });
                     $('#dateArea').show();
-                    $('#datetimepicker').datetimepicker('setOptions', {
-                        inline: true,
-                        //disabledDates: disabledDates,                      
-                        onChangeDateTime:function(ct,$i){
-                          var ind = moment(ct, moment.HTML5_FMT.DATE);
-                          $('.xdsoft_time_variant .xdsoft_time').show();
-                          if(ind !== -1) {
-                              $('.xdsoft_time_variant .xdsoft_time').each(function (index) {
-                                  if (dates[ind] != null) {
-                                      if (dates[ind].indexOf(parseInt($(this).text())) !== -1) {
-                                          $(this).hide();
+                    $('#datetimepicker').datetimepicker('setOptions', {      
+                        //defaultTime: "",//nearest appointment's time
+                        //disabledDates: disabledDates,         
+                        onGenerate: function (ct) {
+                             
+                             var ind = moment(ct).format(moment.HTML5_FMT.DATE);
+                          
+                              $('.xdsoft_time_variant .xdsoft_time').show();
+                              if(ind !== -1) {
+                                  $('.xdsoft_time_variant .xdsoft_time').each(function (index) {
+                                      if (dates[ind] != null) {
+                                          if (dates[ind].indexOf(parseInt($(this).text())) !== -1) {
+                                              console.log(dates[ind])  
+                                              $(this).addClass("xdsoft_disabled")
+                                          }
                                       }
-                                  }
-                              });
-                          }
-                        }
+                                  });
+                              }
+                            
+                        },
                     });
+
+                    $('#pickAppointment').off('click');
+                     $('#pickAppointment').on("click", function () {
+                        var d = $('#datetimepicker').datetimepicker('getValue');
+                        console.log(d)
+                        $.ajax({
+                            url: "/api/CreateAppointment/"+id,
+                            type: "post",
+                            contentType: "application/json",
+                            data: JSON.stringify({ time: moment(d).format("YYYY-MM-DD[T]HH:mm") }),
+                            success: function (data) {
+                                console.log(moment(data));
+                                toastr.success("Randevu talebiniz başarıyla alınmıştır.");
+                            },
+                            error: function (err, status) {
+                                console.log(err.responseText)
+                                if (status == 404) {
+                                    toastr.error("Aradığınız öğe bulunamadı.");
+                                    return;
+                                }
+                                toastr.error(err.responseText);
+                            }
+                        })
+                    });
+                },
+                 error: function (err, status) {
+                    console.log(err.responseText)
+                    if (status == 404) {
+                        toastr.error("Aradığınız öğe bulunamadı.");
+                        return;
+                    }
+                    toastr.error(err.responseText);
+                },
+                complete: function () {
+                    $('#dateLoading').hide();
                 }
             });
         }
+        $('#dateLoading').hide();
         
     </script>
 }

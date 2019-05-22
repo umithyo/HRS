@@ -23,13 +23,20 @@ namespace HRS.Controllers
         private readonly IHospitalManager hospitalManager;
         private readonly IUserManager userManager;
         private readonly IAppointmentManager appointmentManager;
+        private readonly ISessionManager sessionManager;
 
-        public AjaxController(ManagerContext _context, IHospitalManager _hospitalManager, IUserManager _userManager, IAppointmentManager appointmentManager)
+        public AjaxController(
+            ManagerContext _context,
+            IHospitalManager _hospitalManager,
+            IUserManager _userManager,
+            IAppointmentManager appointmentManager,
+            ISessionManager sessionManager)
         {
             context = _context;
             hospitalManager = _hospitalManager;
             userManager = _userManager;
             this.appointmentManager = appointmentManager;
+            this.sessionManager = sessionManager;
         }
         #region CRUD
 
@@ -328,7 +335,23 @@ namespace HRS.Controllers
         [HttpGet("GetDoctorAppointments/{id}")]
         public IActionResult GetDoctorAppointments(Guid id)
         {
+            if (userManager.GetUser(id) == null)
+                return NotFound();
             return Ok(appointmentManager.GetDoctorAppointments(userManager.GetUser(id)));
+        }
+
+        [HttpPost("CreateAppointment/{id}")]
+        public IActionResult CreateAppointment(Guid id, Appointment appointment)
+        {
+            if (userManager.GetUser(id) == null)
+                return NotFound();
+            appointment.Doctor = userManager.GetUser(id);
+            appointment.Patient = sessionManager.GetUser();
+            //appointment.Time = TimeZoneInfo.ConvertTimeFromUtc(appointment.Time, TimeZoneInfo.Local);
+            var status = appointmentManager.CreateAppointment(appointment);
+            if (status != ManagerStatus.OK)
+                return BadRequest(GetErrorString(status));
+            return Ok();
         }
         #endregion
     }

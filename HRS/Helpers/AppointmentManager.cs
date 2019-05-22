@@ -89,6 +89,8 @@ namespace HRS.Helpers
         {
             try
             {
+                if (context.Appointments.Any(x => x.Time.CompareTo(appointment.Time) == 0))
+                    return ManagerStatus.EXISTS;
                 appointment.CreatedAt = DateTime.Now;
                 context.Add(appointment);
                 context.SaveChanges();
