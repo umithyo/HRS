@@ -83,6 +83,7 @@ namespace HRS
         [HttpPost]
         public IActionResult Register(LoginVM vm)
         {
+            vm.User.Role = RoleConfig.User;
             var status = userManager.Register(vm.User, vm.UserInfo);
             if (status != ManagerStatus.OK)
             {
