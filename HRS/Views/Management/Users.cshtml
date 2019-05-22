@@ -332,12 +332,13 @@
 
                     $('#editForm #Role option[value="' + data.role + '"]').attr("selected", "selected");
                     $('#editForm #Role').trigger("change");
-                    if (data.clinic && data.hospital) {
-                        $('#editForm #clinicSelect option[value="' + data.clinic.id + '"]').attr("selected", "selected");
-                        $('#editForm #hospitalSelect option[value="' + data.hospital.id + '"]').attr("selected", "selected");
+                    if (data.userInfo.clinicId && data.userInfo.hospitalId) {
+                        $('#editForm #clinicSelect option[value="' + data.userInfo.clinicId + '"]').attr("selected", "selected");
+                        $('#editForm #hospitalSelect option[value="' + data.userInfo.hospitalId + '"]').attr("selected", "selected");
 
                         $('#editForm #clinicSelect').trigger("change");
                         $('#editForm #hospitalSelect').trigger("change");
+                        
                     }
 
                     $('#editButton').off('click');
@@ -458,11 +459,11 @@
         $(document).ready(function () {
             $('#clinicSelect').on("change", function () {
                 var selectedVal = $('#hospitalSelect').find(":selected").val();
-                console.log(selectedVal)
                 $.ajax({
                     url: "/api/GetClinic/" + this.value,
                     success: function (data) {
-                        $('#hospitalSelect').empty();
+                        
+                        $('#hospitalSelect').html("<option>Hastane</option>");
                         $.each(data.hospitals, function (_, val) {
                             $("#hospitalSelect").append($("<option />").val(val.id).text(val.name));
                             if (selectedVal === val.id.toString()) {
@@ -473,10 +474,10 @@
                     },
                     error: function () {
                         $.ajax({
-                            url: "/api/GetClinics",
+                            url: "/api/GetHospitals",
                             success: function (data) {
-                                $('#hospitalSelect').empty();
-                                $.each(data.hospitals, function (_, val) {
+                                $('#hospitalSelect').html("<option>Hastane</option>")
+                                $.each(data, function (_, val) {
                                     $("#hospitalSelect").append($("<option />").val(val.id).text(val.name));
                                 });
                             }
@@ -488,25 +489,28 @@
 
             $('#hospitalSelect').on("change", function () {
                 var selectedVal = $('#clinicSelect').find(":selected").val();
-                console.log(selectedVal)
                 $.ajax({
                     url: "/api/GetHospital/" + this.value,
                     success: function (data) {
-                        $('#clinicSelect').empty();
+                        
+                        $('#clinicSelect').html("<option>Klinik</option>")
                         $.each(data.clinics, function (_, val) {
                             $("#clinicSelect").append($("<option />").val(val.id).text(val.name));
+                            
                             if (selectedVal === val.id.toString()) {
                                 $("#clinicSelect option[value='" + val.id + "']").attr("selected", "selected");
+                                console.log(val.id + " " + selectedVal)
                             }
                         });
 
                     },
                     error: function () {
+                        
                         $.ajax({
-                            url: "/api/GetHospitals",
+                            url: "/api/GetClinics",
                             success: function (data) {
-                                $('#clinicSelect').empty();
-                                $.each(data.hospitals, function (_, val) {
+                                $('#clinicSelect').html("<option>Klinik</option>")
+                                $.each(data, function (_, val) {
                                     $("#clinicSelect").append($("<option />").val(val.id).text(val.name));
                                 });
                             }
@@ -521,7 +525,7 @@
                 $.ajax({
                     url: "/api/GetClinic/" + this.value,
                     success: function (data) {
-                        $('#editForm #hospitalSelect').empty();
+                        $('#editForm #hospitalSelect').html("<option>Hastane</option>")
                         $.each(data.hospitals, function (_, val) {
                             $("#editForm #hospitalSelect").append($("<option />").val(val.id).text(val.name));
                             if (selectedVal === val.id.toString()) {
@@ -532,10 +536,10 @@
                     },
                     error: function () {
                         $.ajax({
-                            url: "/api/GetClinics",
+                            url: "/api/GetHospitals",
                             success: function (data) {
-                                $('#editForm #hospitalSelect').empty();
-                                $.each(data.hospitals, function (_, val) {
+                                $('#editForm #hospitalSelect').html("<option>Hastane</option>")
+                                $.each(data, function (_, val) {
                                     $("#editForm #hospitalSelect").append($("<option />").val(val.id).text(val.name));
                                 });
                             }
@@ -550,7 +554,7 @@
                 $.ajax({
                     url: "/api/GetHospital/" + this.value,
                     success: function (data) {
-                        $('#editForm #clinicSelect').empty();
+                        $('#editForm #clinicSelect').html("<option>Klinik</option>");
                         $.each(data.clinics, function (_, val) {
                             $("#editForm #clinicSelect").append($("<option />").val(val.id).text(val.name));
                             if (selectedVal === val.id.toString()) {
@@ -561,10 +565,10 @@
                     },
                     error: function () {
                         $.ajax({
-                            url: "/api/GetHospitals",
+                            url: "/api/GetClinics",
                             success: function (data) {
-                                $('#editForm #clinicSelect').empty();
-                                $.each(data.hospitals, function (_, val) {
+                                $('#editForm #clinicSelect').html("<option>Klinik</option>");
+                                $.each(data, function (_, val) {
                                     $("#editForm #clinicSelect").append($("<option />").val(val.id).text(val.name));
                                 });
                             }
