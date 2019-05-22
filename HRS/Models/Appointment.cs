@@ -12,24 +12,15 @@ namespace HRS.Models
         [Key]
         public Guid Id { get; set; }
         [Display(Name = "Hasta")]
-        [Required(ErrorMessage = "Bu alan zorunludur.")]
+        //[Required(ErrorMessage = "Bu alan zorunludur.")]
         public virtual User Patient { get; set; }
         [Display(Name = "Doktor")]
-        [Required(ErrorMessage = "Bu alan zorunludur.")]
+        //[Required(ErrorMessage = "Bu alan zorunludur.")]
         public virtual User Doctor { get; set; }
-        [Display (Name = "Muayene yeri")]
-        [Required(ErrorMessage = "Bu alan zorunludur.")]
-        public virtual Polyclinic Polyclinic { get; set; }
-        [Display(Name = "Klinik")]
-        [Required(ErrorMessage = "Bu alan zorunludur.")]
-        public virtual Clinic Clinic { get; set; }
-        [Display(Name = "Hastane")]
-        [Required(ErrorMessage = "Bu alan zorunludur.")]
-        public virtual Hospital Hospital { get; set; }
         [Column(TypeName = "TIMESTAMP")]
         [Display(Name = "Tarih")]
         [DataType(DataType.DateTime, ErrorMessage = "Geçerli bir tarih giriniz.")]
-        [Required(ErrorMessage = "Bu alan zorunludur.")]
+        //[Required(ErrorMessage = "Bu alan zorunludur.")]
         public DateTime Time { get; set; }       
         [Column(TypeName = "TIMESTAMP")]
         public DateTime CreatedAt { get; set; }
