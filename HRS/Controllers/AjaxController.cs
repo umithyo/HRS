@@ -340,6 +340,45 @@ namespace HRS.Controllers
             return Ok(appointmentManager.GetDoctorAppointments(userManager.GetUser(id)));
         }
 
+        [HttpGet("GetAppointment/{id}")]
+        public IActionResult GetAppointment(Guid id)
+        {
+            var appointment = context.Appointments
+                .Include(x=>x.Doctor)
+                    .ThenInclude(x=>x.UserInfo)
+                .Include(x=>x.Patient)
+                    .ThenInclude(x=>x.UserInfo)
+                .FirstOrDefault(x => x.Id == id);
+            if (appointment == null)
+                return NotFound();
+            return Ok(appointment);
+        }
+
+        [HttpGet("GetAllAppointments")]
+        public IActionResult GetAllAppointments()
+        {
+            var appointments = context.Appointments
+                .Include(x => x.Doctor)
+                    .ThenInclude(x => x.UserInfo)
+                        .ThenInclude(x => x.Clinic)
+                .Include(x => x.Doctor)
+                    .ThenInclude(x => x.UserInfo)
+                        .ThenInclude(x => x.Hospital)
+                .Include(x => x.Patient)
+                    .ThenInclude(x=>x.UserInfo)
+                .Select(x => new {
+                    id = x.Id,
+                    createdAt = x.CreatedAt,
+                    doctor = x.Doctor.UserInfo.Name + " " + x.Doctor.UserInfo.Surname,
+                    patient = x.Patient.UserInfo.Name + " " + x.Patient.UserInfo.Surname,
+                    time = x.Time,
+                    hospital = x.Doctor.UserInfo.Hospital.Name,
+                    polyclinic = hospitalManager.GetPolyclinic(x.Doctor.UserInfo.Hospital, x.Doctor.UserInfo.Clinic) != null ?
+                        hospitalManager.GetPolyclinic(x.Doctor.UserInfo.Hospital, x.Doctor.UserInfo.Clinic).Name :
+                        x.Doctor.UserInfo.Clinic.Name });
+            return Ok(appointments);
+        }
+
         [HttpPost("CreateAppointment/{id}")]
         public IActionResult CreateAppointment(Guid id, Appointment appointment)
         {
@@ -347,11 +386,37 @@ namespace HRS.Controllers
                 return NotFound();
             appointment.Doctor = userManager.GetUser(id);
             appointment.Patient = sessionManager.GetUser();
-            //appointment.Time = TimeZoneInfo.ConvertTimeFromUtc(appointment.Time, TimeZoneInfo.Local);
             var status = appointmentManager.CreateAppointment(appointment);
             if (status != ManagerStatus.OK)
                 return BadRequest(GetErrorString(status));
             return Ok();
+        }
+
+        [HttpPut("UpdateAppointment/{id}")]
+        public IActionResult UpdateAppointment(Guid id, Appointment appointment)
+        {
+            appointment.Doctor = userManager.GetUser(id);
+            appointment.Patient = sessionManager.GetUser();
+            var status = appointmentManager.UpdateAppointment(id, appointment);
+            if (status != ManagerStatus.OK)
+                return BadRequest(GetErrorString(status));
+            return Ok();
+        }
+
+        [HttpDelete("DeleteAppointment")]
+        public IActionResult DeleteAppointment([FromBody] JObject appointments)
+        {
+            var error = "";
+            foreach (var item in appointments["appointments"])
+            {
+                var status = appointmentManager.RemoveAppointment(new Guid (item["id"].ToString()));
+                if (status != ManagerStatus.OK)
+                    error = GetErrorString(status);
+            }
+
+            if (string.IsNullOrEmpty(error))
+                return Ok();
+            return BadRequest(error);
         }
         #endregion
     }

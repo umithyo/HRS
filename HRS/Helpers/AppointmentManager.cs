@@ -18,6 +18,7 @@ namespace HRS.Helpers
         IEnumerable<User> GetAvailableDoctors(FilterVM filterVM);
         ManagerStatus CreateAppointment(Appointment appointment);
         ManagerStatus UpdateAppointment(Guid id, Appointment _appointment);
+        ManagerStatus RemoveAppointment(Guid id);
     }
 
     public class AppointmentManager:IAppointmentManager
@@ -110,6 +111,23 @@ namespace HRS.Helpers
             _appointment.Id = id;
             context.Update(_appointment);
             return ManagerStatus.OK;
+        }
+
+        public ManagerStatus RemoveAppointment(Guid id)
+        {
+            try
+            {
+                var appointment = context.Appointments.FirstOrDefault(x => x.Id == id);
+                if (appointment == null)
+                    return ManagerStatus.NOT_FOUND;
+                context.Remove(appointment);
+                context.SaveChanges();
+                return ManagerStatus.OK;
+            }
+            catch (Exception)
+            {
+                return ManagerStatus.UNKNOWN;
+            }
         }
     }
 }

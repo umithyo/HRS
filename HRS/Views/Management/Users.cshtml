@@ -39,7 +39,7 @@
                             <th>Soyadı</th>
                             <th>Cinsiyeti</th>
                             <th>Rolü</th>
-                            <th></th>
+                            @*<th></th>*@
                         </tr>
                     </thead>
                 </table>
@@ -265,17 +265,16 @@
             },
             "columnDefs":
                 [{
-
-                    "targets": 8,
-                    "searchable": false,
-                    "orderable": false
-                    //"checkboxes": true,
-                },
-                {
                     orderable: false,
                     className: 'select-checkbox',
                     targets: 0
                 },
+                //{
+                //    "targets": 8,
+                //    "searchable": false,
+                //    "orderable": false
+                //    //"checkboxes": true,
+                //},
                 {
                     "targets": [1, 2],
                     "visible": false,
@@ -295,12 +294,12 @@
                 { "data": "userInfo.surname" },
                 { "data": "userInfo.gender" },
                 { "data": "role" },
-                {
+                @*{
                     "data": null,
                     render: function ( data, type, row ) {
                         return '<a href = "@Url.Action("Appointments", "Manager")/'+data.id+'">Randevular <i class="fa fa-external-link"></i></button>';
                     }
-                },              
+                },*@              
             ],
         });
 

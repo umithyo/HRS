@@ -12,7 +12,7 @@ using static HRS.Helpers.Utils;
 
 namespace HRS.Controllers
 {
-    [PermissionAuthorize(Permissions = RoleConfig.Admin+","+RoleConfig.Operator, UnauthorizedRedirectUri = "/Home/Index")]
+    [PermissionAuthorize(Permissions = RoleConfig.Admin, UnauthorizedRedirectUri = "/Home/Index")]
     public class ManagementController : Controller
     {
         private readonly ManagerContext context;
@@ -65,6 +65,7 @@ namespace HRS.Controllers
             return View();
         }
 
+        [PermissionAuthorize(Permissions = RoleConfig.Admin + "," + RoleConfig.Operator)]
         public IActionResult Appointments()
         {
             return View();
