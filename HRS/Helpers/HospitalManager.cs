@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static HRS.Data.Constants;
 
 namespace HRS.Helpers
 {
@@ -22,6 +23,8 @@ namespace HRS.Helpers
         ManagerStatus UpdatePolyclinic(int id, Polyclinic clinic);
         ManagerStatus RemovePolyclinic(int id);
         Polyclinic GetPolyclinic(Hospital hospital, Clinic clinic);
+        IEnumerable<User> GetDoctors();
+        IEnumerable<User> GetPatients();
     }
 
     public class HospitalManager:IHospitalManager
@@ -172,6 +175,16 @@ namespace HRS.Helpers
         public Polyclinic GetPolyclinic(Hospital hospital, Clinic clinic)
         {
             return context.Polyclinics.Where(x => x.ClinicId == clinic.Id && x.HospitalId ==  hospital.Id).FirstOrDefault();
+        }
+
+        public IEnumerable<User> GetDoctors()
+        {
+            return context.Users.Include(x=>x.UserInfo).Where(x => x.Role == RoleConfig.Doctor).ToList();
+        }
+
+        public IEnumerable<User> GetPatients()
+        {
+            return context.Users.Include(x => x.UserInfo).Where(x => x.Role != RoleConfig.Doctor).ToList();
         }
     }
 }

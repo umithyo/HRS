@@ -47,7 +47,7 @@ namespace HRS
             });
             services.AddDistributedMemoryCache();
 
-            services.AddDbContext<ManagerContext>(ServiceLifetime.Transient);
+            services.AddDbContext<ManagerContext>();
             services.AddSingleton(_appSettings);
             ManagerContext.ConnectionStrings = _appSettings.GetSection("ConnectionStrings").Get<Dictionary<string, string>>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
