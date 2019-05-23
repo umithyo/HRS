@@ -366,26 +366,33 @@ namespace HRS.Controllers
                         .ThenInclude(x => x.Hospital)
                 .Include(x => x.Patient)
                     .ThenInclude(x=>x.UserInfo)
-                .Select(x => new {
+                .Select(x => new
+                {
                     id = x.Id,
                     createdAt = x.CreatedAt,
                     doctor = x.Doctor.UserInfo.Name + " " + x.Doctor.UserInfo.Surname,
                     patient = x.Patient.UserInfo.Name + " " + x.Patient.UserInfo.Surname,
                     time = x.Time,
                     hospital = x.Doctor.UserInfo.Hospital.Name,
-                    polyclinic = hospitalManager.GetPolyclinic(x.Doctor.UserInfo.Hospital, x.Doctor.UserInfo.Clinic) != null ?
-                        hospitalManager.GetPolyclinic(x.Doctor.UserInfo.Hospital, x.Doctor.UserInfo.Clinic).Name :
-                        x.Doctor.UserInfo.Clinic.Name });
+                    polyclinic = x.Doctor.UserInfo.Clinic.Name
+                });
             return Ok(appointments);
         }
 
-        [HttpPost("CreateAppointment/{id}")]
-        public IActionResult CreateAppointment(Guid id, Appointment appointment)
+        [HttpPost("CreateAppointment/{id}/{patientId?}")]
+        public IActionResult CreateAppointment(Guid id, Guid patientId, Appointment appointment)
         {
             if (userManager.GetUser(id) == null)
                 return NotFound();
             appointment.Doctor = userManager.GetUser(id);
-            appointment.Patient = sessionManager.GetUser();
+            if (patientId == Guid.Empty || patientId == null)
+            {
+                appointment.Patient = sessionManager.GetUser();
+            }
+            else
+            {
+                appointment.Patient = userManager.GetUser(patientId);
+            }
             var status = appointmentManager.CreateAppointment(appointment);
             if (status != ManagerStatus.OK)
                 return BadRequest(GetErrorString(status));
@@ -407,7 +414,7 @@ namespace HRS.Controllers
         public IActionResult DeleteAppointment([FromBody] JObject appointments)
         {
             var error = "";
-            foreach (var item in appointments["appointments"])
+            foreach (var item in appointments["Appointments"])
             {
                 var status = appointmentManager.RemoveAppointment(new Guid (item["id"].ToString()));
                 if (status != ManagerStatus.OK)
