@@ -83,7 +83,7 @@
         <div class="data">
             @if (ViewBag.Result != null)
             {
-                <table class="table col-md-12">
+                <table class="table col-md-12" id="table">
                     <thead>
                         <tr>
                             <th scope="col"></th>
@@ -146,7 +146,7 @@
                 //add something here
             }
         </div>
-
+        
     </div>
 </div>
 
@@ -241,6 +241,7 @@
                     onGenerate:function( ct ){
                         $(this).find('.xdsoft_date.xdsoft_weekend')
                             .addClass('xdsoft_disabled');
+                        console.log("generated")
                     },
                     defaultTime: '12:00',
                     dayOfWeekStart: 1,
@@ -249,6 +250,7 @@
             $('#dateArea').hide();
             
         });
+
         function GetAppointments(id) {
             var l = "@hosting.WebRootPath";
             $('#dateLoading').show();
@@ -276,7 +278,8 @@
                         //defaultTime: "",//nearest appointment's time
                         //disabledDates: disabledDates,         
                         onGenerate: function (ct) {
-                             
+                             $(this).find('.xdsoft_date.xdsoft_weekend')
+                                .addClass('xdsoft_disabled');
                              var ind = moment(ct).format(moment.HTML5_FMT.DATE);
                           
                               $('.xdsoft_time_variant .xdsoft_time').show();
@@ -295,7 +298,7 @@
                     });
 
                     $('#pickAppointment').off('click');
-                     $('#pickAppointment').on("click", function () {
+                    $('#pickAppointment').on("click", function () {
                         var d = $('#datetimepicker').datetimepicker('getValue');
                         console.log(d)
                         $.ajax({
@@ -332,6 +335,7 @@
             });
         }
         $('#dateLoading').hide();
-        
+    //$('#table').DataTable({
+    //});
     </script>
 }
