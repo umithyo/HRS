@@ -14,10 +14,11 @@
                         <span class="badge bg-green">Yeni ekle</span>
                         <i class="fa fa-plus"></i>
                     </button>
-                    <button class="btn btn-app" data-toggle="modal" data-target="#modal-edit">
+                    <!--sadece saat değiştirilebiliyor, çok saçma-->
+                    <!--<button class="btn btn-app" data-toggle="modal" data-target="#modal-edit">
                         <span class="badge bg-yellow">Düzenle</span>
                         <i class="fa fa-edit"></i>
-                    </button>
+                    </button>-->
                     <button class="btn btn-app" data-toggle="modal" data-target="#modal-delete">
                         <span class="badge bg-red">Sil</span>
                         <i class="fa fa-trash"></i>
@@ -53,7 +54,29 @@
                     <h4 class="modal-title">Randevu Ekle</h4>
                 </div>
                 <div class="modal-body">
-                    
+                    <form onsubmit="return false;" id="createForm">
+                        <div class="form-group">
+                            <select class="form-control select2" style="width: 100%;" id="doctorId">
+                                <option disabled selected>Doktor seçiniz...</option>
+                                @foreach (var item in hospitalManager.GetDoctors())
+                                {
+                                    <option value="@item.Id">@item.UserInfo.Name @item.UserInfo.Surname</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control select2" style="width: 100%;" id="patientId">
+                                <option disabled selected>Hasta seçiniz...</option>
+                                @foreach (var item in hospitalManager.GetPatients())
+                                {
+                                    <option value="@item.Id">@item.UserInfo.Name @item.UserInfo.Surname</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input id="dtpickerCreate" class="datetimepicker" type="text" />
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button id="createButton" type="button" class="btn btn-primary pull-left" onclick="createAppointment()">Oluştur</button>
@@ -75,11 +98,11 @@
                     <h4 class="modal-title">Randevu Düzenle</h4>
                 </div>
                 <div class="modal-body">
-                    <form onsubmit="return false;" id="createForm">
+                    <form onsubmit="return false;" id="editForm">
                         @*<div class="form-group">
-                            <input class="form-control" asp-for="UserInfo.Name" placeholder="Adı" />
-                            <span asp-validation-for="UserInfo.Name" class="text-red"></span>
-                        </div>*@
+                                <input class="form-control" asp-for="UserInfo.Name" placeholder="Adı" />
+                                <span asp-validation-for="UserInfo.Name" class="text-red"></span>
+                            </div>*@
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -158,7 +181,7 @@
                     className: 'text-center'
                 }],
             "columns": [
-                { "data": null, render: function () {  return ""}},
+                { "data": null, render: function () { return "" } },
                 { "data": "id" },
                 { "data": "createdAt" },
                 { "data": "doctor" },
@@ -166,9 +189,114 @@
                 { "data": "hospital" },
                 { "data": "polyclinic" },
                 { "data": "time", render: function (data) { return moment(data).format("DD-MM-YYYY"); } },
-               
+
             ],
         });
+
+        $('.datetimepicker').datetimepicker(
+            {
+                minDate: '+1970/01/02',//yesterday is minimum date(for today use 0 or -1970/01/01)
+                defaultDate: '+1970/01/02',//yesterday is minimum date(for today use 0 or -1970/01/01)
+                lang: 'tr',
+                inline: true,
+                allowTimes: ["06:00", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"],
+                onGenerate: function (ct) {
+                    $(this).find('.xdsoft_date.xdsoft_weekend')
+                        .addClass('xdsoft_disabled');
+                },
+                defaultTime: '12:00',
+                dayOfWeekStart: 1,
+            }
+        );
+
+        $('.select2').select2();
+        $('#doctorId').on('change', function () {
+            var dom_id = $(this).closest("form").find('.datetimepicker').attr('id');
+            GetAppointments(this.value, "#" + dom_id);
+        });
+
+        function GetAppointments(id, picker_id) {
+            $.ajax({
+                url: "/api/GetAppointment/" + id,
+                type: "get",
+                success: function (data) {
+                    var dates = {};
+                    console.log(picker_id)
+                    console.log(data)
+                    var date = moment(data.time).format(moment.HTML5_FMT.DATE);
+                    var times = parseInt(moment(data.time).hours());
+                    $(picker_id).datetimepicker('setOptions', {
+                        onGenerate: function (ct) {
+                            $(this).find('.xdsoft_date.xdsoft_weekend')
+                                .addClass('xdsoft_disabled');
+
+                            $('.xdsoft_time_variant .xdsoft_time').show();
+                            if (ind !== -1) {
+                                $('.xdsoft_time_variant .xdsoft_time').each(function (index) {
+                                    if (times.indexOf(parseInt($(this).text())) !== -1) {
+                                        console.log(dates[ind])
+                                        $(this).addClass("xdsoft_disabled")
+                                    }
+                                });
+                            }
+                        },
+                    });
+                },
+                error: function (err, status) {
+                    console.log(err.responseText)
+                    if (status == 404) {
+                        toastr.error("Aradığınız öğe bulunamadı.");
+                        return;
+                    }
+                    toastr.error(err.responseText);
+                },
+            });
+        }
+
+        function loadFromId(id) {
+            $.ajax({
+                url: "/api/GetAppointment/" + id,
+                type: "get",
+                success: function (data) {
+                    var dates = {};
+                    console.log(picker_id)
+                    console.log(data)
+                    $.each(data, function (_, val) {
+                        var date = moment(val.time).format(moment.HTML5_FMT.DATE);
+                        var time = parseInt(moment(val.time).hours());
+                        if (dates[date] == null) {
+                            dates[date] = [];
+                        }
+                        dates[date].push(time);
+                    });
+                    $('#dtpickerEdit').datetimepicker('setOptions', {
+                        onGenerate: function (ct) {
+                            var ind = moment(ct).format(moment.HTML5_FMT.DATE);
+
+                            $('.xdsoft_time_variant .xdsoft_time').show();
+                            if (ind !== -1) {
+                                $('.xdsoft_time_variant .xdsoft_time').each(function (index) {
+                                    if (dates[ind] != null) {
+                                        if (dates[ind].indexOf(parseInt($(this).text())) !== -1) {
+                                            console.log(dates[ind])
+                                            $(this).addClass("xdsoft_disabled")
+                                        }
+                                    }
+                                });
+                            }
+                        },
+                    });
+                },
+                error: function (err, status) {
+                    console.log(err.responseText)
+                    if (status == 404) {
+                        toastr.error("Aradığınız öğe bulunamadı.");
+                        return;
+                    }
+                    toastr.error(err.responseText);
+                },
+            });
+        }
 
         $('#modal-edit').on('show.bs.modal', function (e) {
             var rows = dt.rows('.selected').data();
@@ -194,39 +322,23 @@
             }
         }
 
-        function loadFromId(id) {
-            $.ajax({
-                url: "/api/GetAppointment/" + id,
-                type: "get",
-                success: function (data) {
-                    console.log(data)
-                    $('#editForm input[name=Name]').val(data.name);                    
-                    $('#editButton').off('click');
-                    $('#editButton').on("click", function () { updateAppointment(data.id) });
-                },
-                error: function (err, status) {
-                    console.log(err.responseText)
-                    if (status == 404) {
-                        toastr.error("Aradığınız öğe bulunamadı.");
-                        return;
-                    }
-                    toastr.error(err.responseText);
-                }
-            })
-        }
+
 
         function createAppointment() {
-            loader('#createButton', true);
-            var formData = $("#createForm").serialize();
-            console.log(formData);
+            loader('#createButton', true)
+            var d = $('#dtpickerCreate').datetimepicker('getValue');
+            var doctorId = $('#doctorId').find(":selected").val();
+            var patientId = $('#patientId').find(":selected").val();
+            console.log(d)
             $.ajax({
-                url: "/api/CreateAppointment",
+                url: "/api/CreateAppointment/" + doctorId + "/" + patientId,
                 type: "post",
-                data: formData,
-                success: function () { dt.ajax.reload(); toastr.success("Randevu kaydı başarıyla oluşturuldu.") },
-                complete: function () {
-                    $("#modal-create").modal("hide");
-                    loader('#createButton', "Oluştur");
+                contentType: "application/json",
+                data: JSON.stringify({ time: moment(d).format("YYYY-MM-DD[T]HH:mm") }),
+                success: function (data) {
+                    console.log(moment(data));
+                    dt.ajax.reload();
+                    toastr.success("Randevu başarıyla oluşturuldu.");
                 },
                 error: function (err, status) {
                     console.log(err.responseText)
@@ -235,9 +347,9 @@
                         return;
                     }
                     toastr.error(err.responseText);
-                }
+                },
+                complete: function () { loader('#createButton', "Oluştur"); }
             });
-
         }
 
         function updateAppointment(id) {
