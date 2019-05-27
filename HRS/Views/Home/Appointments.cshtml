@@ -1,0 +1,88 @@
+﻿@model IEnumerable<Appointment>
+@{
+    ViewData["Title"] = "Randevular";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="randevular">
+    <h3>RANDEVULARIM</h3>
+</div>
+<div class="container">
+    @foreach (var item in Model)
+    {
+        <div class="row randevular-icerikler">
+
+            <div class="randevular-doktorlar col-md-2"><i class="fa fa-user-md" aria-hidden="true"></i>@item.Doctor.UserInfo.Name</div>
+            <div class="randevular-hastane col-md-4">
+                <i class="col-md-1 fa fa-h-square" aria-hidden="true"></i>
+                <h6 class="col-md-11">@item.Doctor.UserInfo.Hospital.Name</h6>
+            </div>
+            <div class="randevular-klinikler col-md-2">@item.Doctor.UserInfo.Clinic.Name</div>
+            <div class="randevular-zaman col-md-2">
+                <div class="randevular-saat">
+                    <i class="fa fa-clock-o" aria-hidden="true"></i> @item.Time.ToShortTimeString()
+                </div>
+                <div class="randevular-takvimler">
+                    <i class="fa fa-calendar" aria-hidden="true"></i> @item.Time.ToShortDateString()
+                </div>
+            </div>
+            <div class="col-md-2">
+                @if (item.Time > DateTime.Now)
+                {
+                    <button class="btn btn-danger" data-toggle="modal" data-target="#modal-delete" data-id="@item.Id">İptal</button>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<div class="modal fade" id="modal-delete">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Randevu iptal edilecek, emin misiniz?
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="deleteButton" class="btn btn-danger pull-left">Sil</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">İptal</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+@section Scripts{ 
+    <script>
+        $('#modal-delete').on('show.bs.modal', function (e) {  
+            var id = $(e.relatedTarget).data('id');
+            $('#deleteButton').off('click');
+            $('#deleteButton').on('click', function () {
+                $.ajax({
+                    url: "/api/DeleteAppointment",
+                    type: "delete",
+                    contentType: "application/json",
+                    data: JSON.stringify({ Appointments: [{ id: id }] }),
+                    success: function () { toastr.warning("Randevu iptal edildi."); window.location = "@Url.Action("Appointments", "Home")" },
+                    complete: function () {
+                        $("#modal-delete").modal("hide");
+                    },
+                    error: function (err, status) {
+                        console.log(err.responseText)
+                        if (status == 404) {
+                            toastr.error("Aradığınız öğe bulunamadı.");
+                            return;
+                        }
+                        toastr.error(err.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+}

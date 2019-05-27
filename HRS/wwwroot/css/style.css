@@ -329,3 +329,98 @@ tbody{
 .dropdown form .buttons .reset-but:hover{
     background: #b30303;
  }
+
+.randevular {
+    float: left;
+    width: 100%;
+    background: #d8040d;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+
+.randevular h3 {
+    float: left;
+    font-size: 27px;
+    color: #860207;
+    font-weight: initial;
+    text-align: center;
+    border-left: 3px solid #94040b;
+    border-right: 3px solid #94040b;
+    width: 50%;
+    margin: 0;
+}
+
+.randevular-icerikler {
+    float: left;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    color: #444444;
+    border-bottom: 1px solid #c8c8c8;
+    align-content: center;
+    width: 100%;
+    font-family: serif;
+    justify-content: center;
+}
+
+.randevular-doktorlar {
+    float: left;
+    border-right: 1px solid #c8c8c8;
+    text-align: center;
+    height: 70%;
+    display: flex;
+    align-items: center;
+}
+
+.randevular-klinikler {
+    float: left;
+    text-align: center;
+    height: 70%;
+    display: flex;
+    font-size: 15px;
+    align-items: center;
+    border-right: 1px solid #c8c8c8;
+}
+
+.randevular-zaman {
+    float: left;
+    text-align: center;
+}
+
+.fa-user-md {
+    font-size: 27px !important;
+    margin-right: 10px;
+    color: #f54878;
+}
+
+.fa-h-square {
+    font-size: 27px !important;
+    padding: 0;
+    color: #94040b;
+}
+
+.randevular-hastane h6 {
+    float: right;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.randevular-hastane {
+    float: left;
+    height: 70%;
+    border-right: 1px solid #8080806e;
+    display: flex;
+    align-items: center;
+}
+
+.randevular-icerikler .fa-clock-o {
+    color: #860207;
+}
+
+.randevular-icerikler .fa-calendar {
+    color: #94040b;
+}

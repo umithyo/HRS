@@ -50,6 +50,13 @@ namespace HRS
             return View(filter);
         }
 
+        [PermissionAuthorize]
+        public IActionResult Appointments()
+        {
+            var appointments = appointmentManager.GetPatientAppointments(sessionManager.GetUser());
+            return View(appointments);
+        }
+
         public IActionResult Login()
         {
             return View();
@@ -60,6 +67,7 @@ namespace HRS
             return View();
         }
 
+        [PermissionAuthorize]
         public IActionResult SignOut()
         {
             sessionManager.SetLoggedOut();

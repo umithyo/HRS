@@ -21,6 +21,7 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <!-- Toastr -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    <script src="~/bower_components/moment/min/moment.min.js"></script>
     <!-- DataTables -->
     @*<link rel="stylesheet" href="~/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">*@
     @RenderSection("Styles", required: false);
@@ -38,16 +39,17 @@
                          data-aos-easing="ease-in-back"
                          data-aos-delay="300"
                          data-aos-offset="0">
-                        <img src="~/images/logo.png">
+                        <a asp-action="Index"><img src="~/images/logo.png"></a>
+                        
                     </div>
                     <div class="col-md-8 calender">
                         <div class="time">
                             <i class="fa fa-clock-o" aria-hidden="true"></i>
-                            <span>21:00</span>
+                            <span><script>document.write(moment(new Date()).format("HH:mm"));</script></span>
                         </div>
                         <div class="date">
                             <i class="fa fa-calendar" aria-hidden="true"></i>
-                            <span>17.04.2019 / Pazartesi</span>
+                            <span><script>document.write(moment(new Date()).format("DD/MM/YYYY"));</script></span>
                         </div>
                     </div>
                 </div>

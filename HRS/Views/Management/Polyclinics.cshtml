@@ -320,6 +320,7 @@
                 data.push({ id: value.id });
             });
             console.log(JSON.stringify(data))
+            $('#deleteButton').off('click');
             $('#deleteButton').on('click', function () {
                 loader('#deleteButton', true);
                 $.ajax({
@@ -330,7 +331,7 @@
                     success: function () { dt.ajax.reload(); toastr.warning("Seçili veriler silindi.") },
                     complete: function () {
                         $("#modal-delete").modal("hide");
-                        loader('#createButton', "Sil");
+                        loader('#deleteButton', "Sil");
                     },
                     error: function (err, status) {
                         console.log(err.responseText)

@@ -48,7 +48,16 @@ namespace HRS.Helpers
 
         public IEnumerable<Appointment> GetPatientAppointments(User patient)
         {
-            return context.Appointments.Where(x => x.Patient.Id == patient.Id).OrderByDescending(x => x.Time).ToList();
+            return context.Appointments
+                .Include(x=>x.Doctor)
+                    .ThenInclude(x=>x.UserInfo)
+                        .ThenInclude(x=>x.Clinic)
+                .Include(x => x.Doctor)
+                    .ThenInclude(x => x.UserInfo)
+                        .ThenInclude(x => x.Hospital)
+                .Where(x => x.Patient.Id == patient.Id)
+                .OrderByDescending(x => x.Time)
+                .ToList();
         }
 
         public IEnumerable<User> GetAvailableDoctors(FilterVM filterVM)

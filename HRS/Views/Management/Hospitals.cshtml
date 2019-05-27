@@ -379,7 +379,7 @@
                 data.push({ id: value.id });
             });
             console.log(JSON.stringify(data))           
-            $("#delete")
+            $('#deleteButton').off('click');
             $('#deleteButton').on('click', function () {
                 loader('#deleteButton', true);
                 $.ajax({
