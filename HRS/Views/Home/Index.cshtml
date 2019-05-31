@@ -80,9 +80,10 @@
                 <button type="submit" class="search hvr-round-corners">RANDEVU ARA</button>
             </div>
         </form>
-        <div class="data">
-            @if (ViewBag.Result != null)
-            {
+        @if (ViewBag.Result != null)
+        {
+            <div class="data">
+
                 <table class="table col-md-12" id="table">
                     <thead>
                         <tr>
@@ -140,18 +141,45 @@
 
                     <tbody>
                 </table>
-            }
-            else
-            {
-                //add something here
-            }
-        </div>
-        
+
+            </div>
+        }
+        else
+        {
+            <div class="container-fluid">
+                <div class="alert alert-danger" role="alert">
+                    Buralar hep bayır idi bahça idi
+                </div>
+            </div>
+        }
     </div>
 </div>
 
+<div class="modal fade" id="modal-info">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-success" role="alert">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary pull-left" data-dismiss="modal">Tamam</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
 @section Styles {
-    <link href="~/css/jquery.datetimepicker.min.css"  rel="stylesheet"/>
+    <link href="~/css/jquery.datetimepicker.min.css" rel="stylesheet" />
 }
 
 @section Scripts{
@@ -173,7 +201,7 @@
                 $.ajax({
                     url: "/api/GetClinic/" + this.value,
                     success: function (data) {
-                        
+
                         $('#hospitalSelect').html("<option>Hastane</option>");
                         $.each(data.hospitals, function (_, val) {
                             $("#hospitalSelect").append($("<option />").val(val.id).text(val.name));
@@ -203,11 +231,11 @@
                 $.ajax({
                     url: "/api/GetHospital/" + this.value,
                     success: function (data) {
-                        
+
                         $('#clinicSelect').html("<option>Klinik</option>")
                         $.each(data.clinics, function (_, val) {
                             $("#clinicSelect").append($("<option />").val(val.id).text(val.name));
-                            
+
                             if (selectedVal === val.id.toString()) {
                                 $("#clinicSelect option[value='" + val.id + "']").attr("selected", "selected");
                                 console.log(val.id + " " + selectedVal)
@@ -216,7 +244,7 @@
 
                     },
                     error: function () {
-                        
+
                         $.ajax({
                             url: "/api/GetClinics",
                             success: function (data) {
@@ -248,8 +276,45 @@
                 }
             );
             $('#dateArea').hide();
-            
+
         });
+
+        function setUpDTPicker(data){
+             var dates = {};
+            console.log(data)
+            $.each(data, function (_, val) {
+                var date = moment(val.time).format(moment.HTML5_FMT.DATE);
+                var time = parseInt(moment(val.time).hours());
+                //disabledDates.append(date);
+                if (dates[date] == null) {
+                    dates[date] = [];
+                }
+                dates[date].push(time);
+            });
+            $('#dateArea').show();
+            $('#datetimepicker').datetimepicker('setOptions', {
+                //defaultTime: "",//nearest appointment's time
+                //disabledDates: disabledDates,
+                onGenerate: function (ct) {
+                        $(this).find('.xdsoft_date.xdsoft_weekend')
+                        .addClass('xdsoft_disabled');
+                        var ind = moment(ct).format(moment.HTML5_FMT.DATE);
+
+                        $('.xdsoft_time_variant .xdsoft_time').show();
+                        if(ind !== -1) {
+                            $('.xdsoft_time_variant .xdsoft_time').each(function (index) {
+                                if (dates[ind] != null) {
+                                    if (dates[ind].indexOf(parseInt($(this).text())) !== -1) {
+                                        console.log(dates[ind])
+                                        $(this).addClass("xdsoft_disabled")
+                                    }
+                                }
+                            });
+                        }
+
+                },
+            });
+        }
 
         function GetAppointments(id) {
             var l = "@hosting.WebRootPath";
@@ -258,45 +323,7 @@
                 url: "/api/GetDoctorAppointments/"+id,
                 type: "get",
                 success: function (data) {
-                    var disabledDates = [];
-                    var dates = {};
-                    console.log(data)
-                    $.each(data, function (_, val) {
-                        var date = moment(val.time).format(moment.HTML5_FMT.DATE);
-                        var time = parseInt(moment(val.time).hours());
-                        //disabledDates.append(date);
-                        if (dates[date] == null) {
-                            dates[date] = [];
-                            console.log(dates)
-                            console.log(dates[date])
-                            console.log(time)
-                        }
-                        dates[date].push(time);
-                    });
-                    $('#dateArea').show();
-                    $('#datetimepicker').datetimepicker('setOptions', {      
-                        //defaultTime: "",//nearest appointment's time
-                        //disabledDates: disabledDates,         
-                        onGenerate: function (ct) {
-                             $(this).find('.xdsoft_date.xdsoft_weekend')
-                                .addClass('xdsoft_disabled');
-                             var ind = moment(ct).format(moment.HTML5_FMT.DATE);
-                          
-                              $('.xdsoft_time_variant .xdsoft_time').show();
-                              if(ind !== -1) {
-                                  $('.xdsoft_time_variant .xdsoft_time').each(function (index) {
-                                      if (dates[ind] != null) {
-                                          if (dates[ind].indexOf(parseInt($(this).text())) !== -1) {
-                                              console.log(dates[ind])  
-                                              $(this).addClass("xdsoft_disabled")
-                                          }
-                                      }
-                                  });
-                              }
-                            
-                        },
-                    });
-
+                    setUpDTPicker(data);
                     $('#pickAppointment').off('click');
                     $('#pickAppointment').on("click", function () {
                         var d = $('#datetimepicker').datetimepicker('getValue');
@@ -306,9 +333,24 @@
                             type: "post",
                             contentType: "application/json",
                             data: JSON.stringify({ time: moment(d).format("YYYY-MM-DD[T]HH:mm") }),
-                            success: function (data) {
-                                console.log(moment(data));
+                            success: function (a_data) {
                                 toastr.success("Randevu talebiniz başarıyla alınmıştır.");
+                                $.ajax({
+                                    url: "/api/GetDoctorAppointments/" + id,
+                                    type: "get",
+                                    success: function (ad_data) {
+                                        setUpDTPicker(ad_data);
+                                        console.log(a_data)
+                                        $('#modal-info').find('.modal-body .alert').html(''+
+                                            '<h4 class="alert-heading">Randevu talebi başarıyla alındı.</h4>'+
+                                            '<p><b>Doktor:</b> '+a_data.doctor.userInfo.name + ' ' + a_data.doctor.userInfo.surname+'</p>'+
+                                            '<hr>'+
+                                            '<p class="mb-0"><b>Tarih:</b> ' + moment(a_data.time).format('DD/MM/YYYY HH:mm') + '</p>'+
+                                            '<a href = "/Home/Appointments">Detayları görmek için lütfen tıklayın...</a>'
+                                            );
+                                        $('#modal-info').modal('show');
+                                    }
+                                });
                             },
                             error: function (err, status) {
                                 console.log(err.responseText)

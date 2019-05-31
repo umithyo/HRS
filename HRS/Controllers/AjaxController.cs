@@ -396,7 +396,7 @@ namespace HRS.Controllers
             var status = appointmentManager.CreateAppointment(appointment);
             if (status != ManagerStatus.OK)
                 return BadRequest(GetErrorString(status));
-            return Ok();
+            return Ok(appointment);
         }
 
         [HttpPut("UpdateAppointment/{id}")]
