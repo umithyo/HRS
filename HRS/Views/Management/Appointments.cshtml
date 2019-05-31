@@ -88,7 +88,7 @@
         <!-- /.modal-dialog -->
     </div>
     <!-- /.modal -->
-    <div class="modal fade" id="modal-edit">
+    @*<div class="modal fade" id="modal-edit">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -99,10 +99,7 @@
                 </div>
                 <div class="modal-body">
                     <form onsubmit="return false;" id="editForm">
-                        @*<div class="form-group">
-                                <input class="form-control" asp-for="UserInfo.Name" placeholder="Adı" />
-                                <span asp-validation-for="UserInfo.Name" class="text-red"></span>
-                            </div>*@
+
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -114,7 +111,7 @@
         </div>
         <!-- /.modal-dialog -->
     </div>
-    <!-- /.modal -->
+    <!-- /.modal -->*@
     <div class="modal fade" id="modal-delete">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -141,6 +138,15 @@
 
 @section Scripts{
     <script>
+         function loader(element, state) {
+            if (state == true) {
+                $(element).html('Lütfen bekleyin <i class="fa fa-spinner fa-spin"></i>');
+                $(element).addClass("disabled");
+            } else {
+                $(element).html(state);
+                $(element).removeClass("disabled");
+            }
+        }
 
         var dt = $('#table').DataTable({
             "language": {
@@ -212,78 +218,48 @@
         $('.select2').select2();
         $('#doctorId').on('change', function () {
             var dom_id = $(this).closest("form").find('.datetimepicker').attr('id');
-            GetAppointments(this.value, "#" + dom_id);
+            GetAppointments(this.value);
         });
 
-        function GetAppointments(id, picker_id) {
+        function GetAppointments(id) {
             $.ajax({
-                url: "/api/GetAppointment/" + id,
+                url: "/api/GetDoctorAppointments/" + id,
                 type: "get",
                 success: function (data) {
                     var dates = {};
-                    console.log(picker_id)
-                    console.log(data)
-                    var date = moment(data.time).format(moment.HTML5_FMT.DATE);
-                    var times = parseInt(moment(data.time).hours());
-                    $(picker_id).datetimepicker('setOptions', {
-                        onGenerate: function (ct) {
-                            $(this).find('.xdsoft_date.xdsoft_weekend')
-                                .addClass('xdsoft_disabled');
-
-                            $('.xdsoft_time_variant .xdsoft_time').show();
-                            if (ind !== -1) {
-                                $('.xdsoft_time_variant .xdsoft_time').each(function (index) {
-                                    if (times.indexOf(parseInt($(this).text())) !== -1) {
-                                        console.log(dates[ind])
-                                        $(this).addClass("xdsoft_disabled")
-                                    }
-                                });
-                            }
-                        },
-                    });
-                },
-                error: function (err, status) {
-                    console.log(err.responseText)
-                    if (status == 404) {
-                        toastr.error("Aradığınız öğe bulunamadı.");
-                        return;
-                    }
-                    toastr.error(err.responseText);
-                },
-            });
-        }
-
-        function loadFromId(id) {
-            $.ajax({
-                url: "/api/GetAppointment/" + id,
-                type: "get",
-                success: function (data) {
-                    var dates = {};
-                    console.log(picker_id)
                     console.log(data)
                     $.each(data, function (_, val) {
                         var date = moment(val.time).format(moment.HTML5_FMT.DATE);
                         var time = parseInt(moment(val.time).hours());
+                        //disabledDates.append(date);
                         if (dates[date] == null) {
                             dates[date] = [];
+                            //console.log(dates)
+                            //console.log(dates[date])
+                            //console.log(time)
                         }
                         dates[date].push(time);
                     });
-                    $('#dtpickerEdit').datetimepicker('setOptions', {
+                    $('#dtpickerCreate').datetimepicker('setOptions', {      
+                        //defaultTime: "",//nearest appointment's time
+                        //disabledDates: disabledDates,         
                         onGenerate: function (ct) {
-                            var ind = moment(ct).format(moment.HTML5_FMT.DATE);
-
-                            $('.xdsoft_time_variant .xdsoft_time').show();
-                            if (ind !== -1) {
-                                $('.xdsoft_time_variant .xdsoft_time').each(function (index) {
-                                    if (dates[ind] != null) {
-                                        if (dates[ind].indexOf(parseInt($(this).text())) !== -1) {
-                                            console.log(dates[ind])
-                                            $(this).addClass("xdsoft_disabled")
-                                        }
-                                    }
-                                });
-                            }
+                             $(this).find('.xdsoft_date.xdsoft_weekend')
+                                .addClass('xdsoft_disabled');
+                             var ind = moment(ct).format(moment.HTML5_FMT.DATE);
+                          
+                              $('.xdsoft_time_variant .xdsoft_time').show();
+                              if(ind !== -1) {
+                                  $('.xdsoft_time_variant .xdsoft_time').each(function (index) {
+                                      if (dates[ind] != null) {
+                                          if (dates[ind].indexOf(parseInt($(this).text())) !== -1) {
+                                              console.log(dates[ind])  
+                                              $(this).addClass("xdsoft_disabled")
+                                          }
+                                      }
+                                  });
+                              }
+                            
                         },
                     });
                 },
@@ -297,32 +273,6 @@
                 },
             });
         }
-
-        $('#modal-edit').on('show.bs.modal', function (e) {
-            var rows = dt.rows('.selected').data();
-            if (rows.length > 1) {
-                toastr.error("Birden fazla veriyi düzenleyemezsiniz.");
-                e.preventDefault();
-                return;
-            } else if (rows.length == 0) {
-                toastr.error("Düzenleme yapmak istediğiniz veriyi seçiniz.");
-                e.preventDefault();
-                return;
-            }
-            loadFromId(rows[0].id);
-        });
-
-        function loader(element, state) {
-            if (state == true) {
-                $(element).html('Lütfen bekleyin <i class="fa fa-spinner fa-spin"></i>');
-                $(element).addClass("disabled");
-            } else {
-                $(element).html(state);
-                $(element).removeClass("disabled");
-            }
-        }
-
-
 
         function createAppointment() {
             loader('#createButton', true)
@@ -338,6 +288,7 @@
                 success: function (data) {
                     console.log(moment(data));
                     dt.ajax.reload();
+                    GetAppointments(doctorId);
                     toastr.success("Randevu başarıyla oluşturuldu.");
                 },
                 error: function (err, status) {
