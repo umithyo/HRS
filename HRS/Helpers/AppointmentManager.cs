@@ -80,7 +80,7 @@ namespace HRS.Helpers
 
             if (filterVM.HospitalId != null)
             {
-                doctors = doctors.Where(x => x.UserInfo.HospitalId == filterVM.ClinicId).ToList();
+                doctors = doctors.Where(x => x.UserInfo.HospitalId == filterVM.HospitalId).ToList();
             }
 
             if (filterVM.CityId != null)
