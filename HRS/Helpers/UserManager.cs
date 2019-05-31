@@ -48,7 +48,7 @@ namespace HRS.Helpers
 
         public User GetUser(Guid id)
         {
-            return context.Users.FirstOrDefault(x => x.Id == id);
+            return context.Users.Include(x=>x.UserInfo).FirstOrDefault(x => x.Id == id);
         }
 
         public User GetUserFromTC(string tc)
