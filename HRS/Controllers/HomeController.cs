@@ -47,7 +47,12 @@ namespace HRS
             ViewBag.Hospitals = context.Hospitals.ToList();
             var result = appointmentManager.GetAvailableDoctors(filter);
             ViewBag.Result = result;
-            return View(filter);
+            if (result.Count() > 0)
+            {
+                ViewBag.Success = "Sonuçlar";
+            }
+            ModelState.Clear();
+            return View();
         }
 
         [PermissionAuthorize]
