@@ -10,13 +10,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
+using static HRS.Data.Constants;
 using static HRS.Helpers.Utils;
 
 namespace HRS.Controllers
 {
     [Route("api")]
     [ApiController]
-    //[PermissionAuthorize]
+    [PermissionAuthorize]
     public class AjaxController : ControllerBase
     {
         private readonly ManagerContext context;
@@ -100,6 +101,7 @@ namespace HRS.Controllers
         }
 
         [HttpPost("CreateHospital")]
+        [PermissionAuthorize(Permissions = RoleConfig.Admin)]
         public IActionResult CreateHospital([FromForm] Hospital hospital, [FromForm] IFormCollection form)
         {
             var form_clinics = form["Clinics"];
@@ -121,6 +123,7 @@ namespace HRS.Controllers
         }
 
         [HttpPut("UpdateHospital/{id}")]
+        [PermissionAuthorize(Permissions = RoleConfig.Admin)]
         public IActionResult UpdateHospital(int id, [FromForm] Hospital hospital, [FromForm] IFormCollection form)
         {
             var form_clinics = form["Clinics"];
@@ -143,6 +146,7 @@ namespace HRS.Controllers
         }
 
         [HttpDelete("DeleteHospital")]
+        [PermissionAuthorize(Permissions = RoleConfig.Admin)]
         public IActionResult DeleteHospital([FromBody] JObject hospitals)
         {
             var error = "";
@@ -179,6 +183,7 @@ namespace HRS.Controllers
         }
 
         [HttpPost("CreateClinic")]
+        [PermissionAuthorize(Permissions = RoleConfig.Admin)]
         public IActionResult CreateClinic([FromForm] Clinic clinic)
         {
             var status = hospitalManager.CreateClinic(clinic);
@@ -189,6 +194,7 @@ namespace HRS.Controllers
         }
 
         [HttpPut("UpdateClinic/{id}")]
+        [PermissionAuthorize(Permissions = RoleConfig.Admin)]
         public IActionResult UpdateClinic(int id, [FromForm] Clinic clinic)
         {
             var status = hospitalManager.UpdateClinic(id, clinic);
@@ -199,6 +205,7 @@ namespace HRS.Controllers
         }
 
         [HttpDelete("DeleteClinic")]
+        [PermissionAuthorize(Permissions = RoleConfig.Admin)]
         public IActionResult DeleteClinic([FromBody] JObject clinics)
         {
             var error = "";
@@ -236,6 +243,7 @@ namespace HRS.Controllers
         }
 
         [HttpPost("CreateUser")]
+        [PermissionAuthorize(Permissions = RoleConfig.Admin)]
         public IActionResult CreateUser([FromForm] User user)
         {
             var status = userManager.Register(user, user.UserInfo);
@@ -246,6 +254,7 @@ namespace HRS.Controllers
         }
 
         [HttpPut("UpdateUser/{id}")]
+        [PermissionAuthorize(Permissions = RoleConfig.Admin)]
         public IActionResult UpdateUser(Guid id, [FromForm] User _user)
         {
 
@@ -258,6 +267,7 @@ namespace HRS.Controllers
         }
 
         [HttpDelete("DeleteUser")]
+        [PermissionAuthorize(Permissions = RoleConfig.Admin)]
         public IActionResult DeleteUser([FromBody] JObject users)
         {
             var error = "";
@@ -273,6 +283,7 @@ namespace HRS.Controllers
             return BadRequest(error);
         }
         #endregion
+
         #region Polyclinics
         [HttpGet("GetPolyclinics")]
         public IActionResult GetPolyclinics()
@@ -294,6 +305,7 @@ namespace HRS.Controllers
         }
 
         [HttpPost("CreatePolyclinic")]
+        [PermissionAuthorize(Permissions = RoleConfig.Admin)]
         public IActionResult CreatePolyclinic([FromForm] Polyclinic polyclinic)
         {
             var status = hospitalManager.CreatePolyclinic(polyclinic);
@@ -304,6 +316,7 @@ namespace HRS.Controllers
         }
 
         [HttpPut("UpdatePolyclinic/{id}")]
+        [PermissionAuthorize(Permissions = RoleConfig.Admin)]
         public IActionResult UpdatePolyclinic(int id, [FromForm] Polyclinic polyclinic)
         {
             var status = hospitalManager.UpdatePolyclinic(id, polyclinic);
@@ -314,6 +327,7 @@ namespace HRS.Controllers
         }
 
         [HttpDelete("DeletePolyclinic")]
+        [PermissionAuthorize(Permissions = RoleConfig.Admin)]
         public IActionResult DeletePolyclinic([FromBody] JObject polyclinics)
         {
             var error = "";
@@ -380,6 +394,7 @@ namespace HRS.Controllers
         }
 
         [HttpPost("CreateAppointment/{id}/{patientId?}")]
+        [PermissionAuthorize(Permissions = RoleConfig.Admin + ", " + RoleConfig.Operator)]
         public IActionResult CreateAppointment(Guid id, Guid patientId, Appointment appointment)
         {
             if (userManager.GetUser(id) == null)
@@ -400,6 +415,7 @@ namespace HRS.Controllers
         }
 
         [HttpPut("UpdateAppointment/{id}")]
+        [PermissionAuthorize(Permissions = RoleConfig.Admin + ", " + RoleConfig.Operator)]
         public IActionResult UpdateAppointment(Guid id, Appointment appointment)
         {
             appointment.Doctor = userManager.GetUser(id);
@@ -411,6 +427,7 @@ namespace HRS.Controllers
         }
 
         [HttpDelete("DeleteAppointment")]
+        [PermissionAuthorize(Permissions = RoleConfig.Admin + ", " + RoleConfig.Operator)]
         public IActionResult DeleteAppointment([FromBody] JObject appointments)
         {
             var error = "";

@@ -12,7 +12,6 @@ using static HRS.Helpers.Utils;
 
 namespace HRS.Controllers
 {
-    [PermissionAuthorize(Permissions = RoleConfig.Admin, UnauthorizedRedirectUri = "/Home/Index")]
     public class ManagementController : Controller
     {
         private readonly ManagerContext context;
@@ -25,6 +24,7 @@ namespace HRS.Controllers
             hospitalManager = _hospitalManager;
         }
 
+        [PermissionAuthorize(Permissions = RoleConfig.Admin + ", " + RoleConfig.Operator)]
         public IActionResult Index()
         {
             ViewBag.Counts = new Dictionary<string, int>
@@ -33,12 +33,14 @@ namespace HRS.Controllers
                 { "Users", context.Users.Count() },
                 { "Polyclinics", context.Polyclinics.Count() },
                 { "Clinics", context.Clinics.Count() },
+                { "Appointments", context.Appointments.Count() },
                 { "Cities", context.Cities.Count() },
                 { "Towns", context.Towns.Count() },
             };
             return View();
         }
 
+        [PermissionAuthorize(Permissions = RoleConfig.Admin)]
         public IActionResult Hospitals()
         {
             ViewBag.Cities = context.Cities.ToList();
@@ -46,11 +48,13 @@ namespace HRS.Controllers
             return View();
         }
 
+        [PermissionAuthorize(Permissions = RoleConfig.Admin)]
         public IActionResult Clinics()
         {
             return View();
         }
 
+        [PermissionAuthorize(Permissions = RoleConfig.Admin)]
         public IActionResult Users()
         {
             ViewBag.Clinics = context.Clinics.ToList();
@@ -58,6 +62,7 @@ namespace HRS.Controllers
             return View();
         }
 
+        [PermissionAuthorize(Permissions = RoleConfig.Admin)]
         public IActionResult Polyclinics()
         {
             ViewBag.Clinics = context.Clinics.ToList();

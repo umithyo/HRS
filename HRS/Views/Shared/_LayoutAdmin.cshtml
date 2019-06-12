@@ -147,13 +147,14 @@
                     <li><a asp-action="Index" asp-controller="Home"><i class="ion ion-home"></i><span>Anasayfa</span></a></li>
                     <li class="header">Düzenleme</li>
                     <!-- Optionally, you can add icons to the links -->
-                    <li><a asp-action="Hospitals" asp-controller="Management"><i class="fa fa-h-square"></i> <span>Hastaneler</span></a></li>
-                    <li><a asp-action="Users" asp-controller="Management"><i class="fa fa-user-md"></i> <span>Kullanıcılar</span></a></li>
-                    <li><a asp-action="Clinics" asp-controller="Management"><i class="fa fa-hospital-o"></i> <span>Klinikler</span></a></li>
-                    <li><a asp-action="Polyclinics" asp-controller="Management"><i class="fa fa-stethoscope"></i> <span>Poliklinikler</span></a></li>
+                    @if (sessionManager.GetRole() == Constants.RoleConfig.Admin)
+                    {
+                        <li><a asp-action="Hospitals" asp-controller="Management"><i class="fa fa-h-square"></i> <span>Hastaneler</span></a></li>
+                        <li><a asp-action="Users" asp-controller="Management"><i class="fa fa-user-md"></i> <span>Kullanıcılar</span></a></li>
+                        <li><a asp-action="Clinics" asp-controller="Management"><i class="fa fa-hospital-o"></i> <span>Klinikler</span></a></li>
+                        <li><a asp-action="Polyclinics" asp-controller="Management"><i class="fa fa-stethoscope"></i> <span>Poliklinikler</span></a></li>
+                    }
                     <li><a asp-action="Appointments" asp-controller="Management"><i class="fa fa-calendar"></i> <span>Randevular</span></a></li>
-                    @*<li><a asp-action="Towns" asp-controller="Management"><i class="fa fa-map-marker"></i> <span>İlçeler</span></a></li>*@
-
                 </ul>
                 <!-- /.sidebar-menu -->
             </section>

@@ -8,63 +8,80 @@
 
 <!-- Small boxes (Stat box) -->
 <div class="row">
-    <div class="col-lg-3 col-xs-6">
-        <!-- small box -->
-        <div class="small-box bg-aqua">
-            <div class="inner">
-                <h3>Hastaneler</h3>
+    @if (sessionManager.GetRole() == Constants.RoleConfig.Admin)
+    {
+        <div class="col-lg-3 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-aqua">
+                <div class="inner">
+                    <h3>Hastaneler</h3>
 
-                <p>Hastaneleri düzenle (@counts["Hospitals"])</p>
+                    <p>Hastaneleri düzenle (@counts["Hospitals"])</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-h-square"></i>
+                </div>
+                <a asp-action="Hospitals" class="small-box-footer">Sayfaya Git<i class="fa fa-angle-double-right"></i></a>
             </div>
-            <div class="icon">
-                <i class="fa fa-h-square"></i>
-            </div>
-            <a asp-action="Hospitals" class="small-box-footer">Sayfaya Git<i class="fa fa-angle-double-right"></i></a>
         </div>
-    </div>      
-    <div class="col-lg-3 col-xs-6">
-        <!-- small box -->
-        <div class="small-box bg-green">
-            <div class="inner">
-                <h3>Kullanıcılar</h3>
+        <div class="col-lg-3 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-green">
+                <div class="inner">
+                    <h3>Kullanıcılar</h3>
 
-                <p>Kullanıcıları düzenle (@counts["Users"])</p>
+                    <p>Kullanıcıları düzenle (@counts["Users"])</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-user-md"></i>
+                </div>
+                <a asp-action="Users" class="small-box-footer">Sayfaya Git<i class="fa fa-angle-double-right"></i></a>
             </div>
-            <div class="icon">
-                <i class="fa fa-user-md"></i>
-            </div>
-            <a asp-action="Users" class="small-box-footer">Sayfaya Git<i class="fa fa-angle-double-right"></i></a>
         </div>
-    </div>      
-    
-    <div class="col-lg-3 col-xs-6">
-        <!-- small box -->
-        <div class="small-box bg-yellow">
-            <div class="inner">
-                <h3>Klinikler</h3>
 
-                <p>Klinikleri düzenle (@counts["Clinics"])</p>
+        <div class="col-lg-3 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-yellow">
+                <div class="inner">
+                    <h3>Klinikler</h3>
+
+                    <p>Klinikleri düzenle (@counts["Clinics"])</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-hospital-o"></i>
+                </div>
+                <a asp-action="Clinics" class="small-box-footer">Sayfaya Git<i class="fa fa-angle-double-right"></i></a>
             </div>
-            <div class="icon">
-                <i class="fa fa-hospital-o"></i>
-            </div>
-            <a asp-action="Clinics" class="small-box-footer">Sayfaya Git<i class="fa fa-angle-double-right"></i></a>
         </div>
-    </div>   
+        <div class="col-lg-3 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-orange">
+                <div class="inner">
+                    <h3>Poliklinikler</h3>
+
+                    <p>Poliklinikleri düzenle (@counts["Polyclinics"])</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-stethoscope"></i>
+                </div>
+                <a asp-action="Polyclinics" class="small-box-footer">Sayfaya Git<i class="fa fa-angle-double-right"></i></a>
+            </div>
+        </div>
+    }
     <div class="col-lg-3 col-xs-6">
         <!-- small box -->
         <div class="small-box bg-orange">
             <div class="inner">
-                <h3>Poliklinikler</h3>
+                <h3>Randevular</h3>
 
-                <p>Poliklinikleri düzenle (@counts["Polyclinics"])</p>
+                <p>Randevuları düzenle (@counts["Appointments"])</p>
             </div>
             <div class="icon">
-                <i class="fa fa-stethoscope"></i>
+                <i class="fa fa-calendar"></i>
             </div>
-            <a asp-action="Polyclinics" class="small-box-footer">Sayfaya Git<i class="fa fa-angle-double-right"></i></a>
+            <a asp-action="Appointments" class="small-box-footer">Sayfaya Git<i class="fa fa-angle-double-right"></i></a>
         </div>
-    </div> 
+    </div>
     <div class="col-lg-3 col-xs-6">
         <!-- small box -->
         <div class="small-box bg-light-blue">
@@ -78,7 +95,7 @@
             </div>
             @*<a asp-action="Cities" class="small-box-footer">Sayfaya Git<i class="fa fa-angle-double-right"></i></a>*@
         </div>
-    </div> 
+    </div>
     <div class="col-lg-3 col-xs-6">
         <!-- small box -->
         <div class="small-box bg-lime">
@@ -92,5 +109,5 @@
             </div>
             @*<a asp-action="Towns" class="small-box-footer">Sayfaya Git<i class="fa fa-angle-double-right"></i></a>*@
         </div>
-    </div> 
+    </div>
 </div>
