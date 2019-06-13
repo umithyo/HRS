@@ -106,7 +106,7 @@ namespace HRS.Helpers
                 context.SaveChanges();
                 return ManagerStatus.OK;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return ManagerStatus.UNKNOWN;
             }

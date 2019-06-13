@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using HRS.Data;
 using HRS.Filters;
 using HRS.Helpers;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using static HRS.Data.Constants;
-using static HRS.Helpers.Utils;
 
 namespace HRS.Controllers
 {
