@@ -374,6 +374,9 @@
         function createUser() {
             loader('#createButton', true);
             var formData = $("#createForm").serialize();
+            if ($("#createForm #Role").children("option:selected").val() != "Doktor") {
+                formData = $("#createForm :input[name!='UserInfo.HospitalId'][name!='UserInfo.ClinicId']").serialize();
+            }
             console.log(formData);
             $.ajax({
                 url: "/api/CreateUser",
@@ -399,6 +402,9 @@
         function updateUser(id) {
             loader('#editButton', true);
             var formData = $("#editForm").serialize();
+            if ($("#editForm #Role").children("option:selected").val() != "Doktor") {
+                formData = $("#editForm :input[name!='UserInfo.HospitalId'][name!='UserInfo.ClinicId']").serialize();
+            }
             $.ajax({
                 url: "/api/UpdateUser/"+id,
                 type: "put",
